@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-HK">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>倒掛天花嘅風扇車</title>
+  <meta name="description" content="小學科學互動實驗: 調校大風扇, 睇貼天花力同重力, 理解架車點解可以倒掛, 又點解會跌.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#controls">跳到控制</a>
+  <div class="wrap">
+    <header class="hero card">
+      <div class="stripes" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="hero-inner">
+        <p class="eyebrow">小學科學互動實驗</p>
+        <h1>倒掛天花嘅風扇車</h1>
+        <p class="lede">科學家同工程師喺諗: 如果車有好大風扇, 推力夠大, 可唔可以倒掛天花?</p>
+        <p class="disclaimer">呢個係思想實驗, 唔係話任何一架出街嘅車已經做到. 你拉動風扇, 比較吸力同重力.</p>
+        <ol class="howto">
+          <li>拉動拉桿, 改風扇輸出.</li>
+          <li>睇貼天花力跟住風扇一齊變大.</li>
+          <li>吸力細過重力, 架車就跌.</li>
+        </ol>
+      </div>
+    </header>
+
+    <main>
+      <div class="layout">
+        <section class="stage-wrap" aria-labelledby="stage-title">
+          <h2 id="stage-title" class="sr-only">實驗畫面</h2>
+          <div class="stage" id="stage">
+            <div class="window" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="ceiling">
+              <span class="tag">天花</span>
+              <span class="tag" id="stage-pill">貼住</span>
+            </div>
+            <div class="floor">
+              <span class="tag">地面</span>
+            </div>
+            <div class="blob-shadow" id="shadow" aria-hidden="true"></div>
+            <div class="particles" id="particles" aria-hidden="true"></div>
+            <div class="car" id="car">
+              <svg class="car-svg" viewBox="0 0 240 196" aria-hidden="true">
+                <g id="wheel-rear">
+                  <circle cx="62" cy="34" r="20" fill="#17202b"/>
+                  <circle cx="62" cy="34" r="12" fill="#f4f7fa"/>
+                  <g stroke="#17202b" stroke-width="3" stroke-linecap="round">
+                    <line x1="62" y1="24" x2="62" y2="44"/>
+                    <line x1="52" y1="34" x2="72" y2="34"/>
+                    <line x1="55" y1="27" x2="69" y2="41"/>
+                    <line x1="69" y1="27" x2="55" y2="41"/>
+                  </g>
+                  <circle cx="62" cy="34" r="3.5" fill="#17202b"/>
+                </g>
+                <g id="wheel-front">
+                  <circle cx="186" cy="34" r="20" fill="#17202b"/>
+                  <circle cx="186" cy="34" r="12" fill="#f4f7fa"/>
+                  <g stroke="#17202b" stroke-width="3" stroke-linecap="round">
+                    <line x1="186" y1="24" x2="186" y2="44"/>
+                    <line x1="176" y1="34" x2="196" y2="34"/>
+                    <line x1="179" y1="27" x2="193" y2="41"/>
+                    <line x1="193" y1="27" x2="179" y2="41"/>
+                  </g>
+                  <circle cx="186" cy="34" r="3.5" fill="#17202b"/>
+                </g>
+                <circle id="wheel-bottom" cx="62" cy="54" r="0.5" fill="none"/>
+                <rect x="46" y="50" width="156" height="16" rx="6" fill="#243044" stroke="#17202b" stroke-width="3"/>
+                <path fill="#ef4d4d" stroke="#17202b" stroke-width="3" d="M48 66 H198 C214 66 222 78 220 92 L214 108 C210 122 196 128 178 128 H66 C48 128 36 118 36 102 L40 78 C42 70 48 66 48 66 Z"/>
+                <path d="M64 76 H188" stroke="#ffb1aa" stroke-width="4" stroke-linecap="round"/>
+                <path d="M120 72 V122" stroke="#d63c3c" stroke-width="3"/>
+                <path fill="#d7f1fb" stroke="#17202b" stroke-width="3" d="M78 90 H156 C170 90 176 98 174 108 H84 C74 108 72 100 78 90 Z"/>
+                <path d="M92 98 H138" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                <rect x="208" y="80" width="16" height="12" rx="3" fill="#ffe28a" stroke="#17202b" stroke-width="2"/>
+                <rect x="26" y="78" width="12" height="14" rx="2" fill="#ffb4b4" stroke="#17202b" stroke-width="2"/>
+                <rect x="108" y="124" width="28" height="14" rx="4" fill="#243044" stroke="#17202b" stroke-width="3"/>
+                <g id="fan-unit">
+                  <circle cx="122" cy="152" r="26" fill="#1d4e89" stroke="#17202b" stroke-width="3"/>
+                  <circle cx="122" cy="152" r="17" fill="#163a66"/>
+                  <g id="blades">
+                    <ellipse cx="122" cy="138" rx="5" ry="12" fill="#f4e2a8" stroke="#17202b" stroke-width="1.5"/>
+                    <ellipse cx="122" cy="138" rx="5" ry="12" fill="#f4e2a8" stroke="#17202b" stroke-width="1.5" transform="rotate(120 122 152)"/>
+                    <ellipse cx="122" cy="138" rx="5" ry="12" fill="#f4e2a8" stroke="#17202b" stroke-width="1.5" transform="rotate(240 122 152)"/>
+                  </g>
+                  <circle cx="122" cy="152" r="5" fill="#f4e2a8" stroke="#17202b" stroke-width="2"/>
+                </g>
+                <g id="air-marks" stroke="#1d4e89" stroke-width="4" stroke-linecap="round" opacity="0.8">
+                  <line x1="108" y1="180" x2="104" y2="192"/>
+                  <line x1="122" y1="182" x2="122" y2="194"/>
+                  <line x1="136" y1="180" x2="140" y2="192"/>
+                </g>
+                <circle id="fan-anchor" cx="122" cy="178" r="1" fill="none"/>
+              </svg>
+              <div class="arrows" aria-hidden="true">
+                <div class="arrow arrow-up" id="arrow-up">
+                  <span class="arrow-label">吸力 <b id="arrow-hold">75</b></span>
+                  <div class="arrow-graphic">
+                    <span class="head head-up"></span>
+                    <span class="shaft" id="shaft-up"></span>
+                  </div>
+                </div>
+                <div class="arrow arrow-down" id="arrow-down">
+                  <div class="arrow-graphic">
+                    <span class="shaft" id="shaft-down"></span>
+                    <span class="head head-down"></span>
+                  </div>
+                  <span class="arrow-label">重力 <b data-weight>60</b></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <ul class="legend">
+            <li><i class="swatch swatch-air"></i>藍色粒子: 風扇推走嘅空氣</li>
+            <li><i class="swatch swatch-hold"></i>向上箭咀: 貼天花力</li>
+            <li><i class="swatch swatch-weight"></i>向下箭咀: 重力</li>
+          </ul>
+        </section>
+
+        <section class="card controls" id="controls" aria-labelledby="controls-title">
+          <h2 id="controls-title">控制同比較</h2>
+          <div class="status" id="status">
+            <p class="status-title" id="status-title">可以倒掛</p>
+            <p class="status-body" id="status-body"></p>
+          </div>
+          <div class="sr-only" id="live" aria-live="polite"></div>
+
+          <div class="fan-block">
+            <div class="fan-head">
+              <label for="fan-slider">風扇輸出 <span class="quiet">開幾大</span></label>
+              <p class="big-num"><span id="big-fan">75</span><span class="unit">%</span></p>
+            </div>
+            <div class="slider-row">
+              <button type="button" id="fan-down" aria-label="風扇輸出減少 10">-10</button>
+              <div class="slider-wrap">
+                <div class="slider-track" aria-hidden="true"><span id="slider-fill"></span></div>
+                <input id="fan-slider" class="fan-slider" type="range" min="0" max="100" step="1" value="75" aria-describedby="fan-help">
+              </div>
+              <button type="button" id="fan-up" aria-label="風扇輸出增加 10">+10</button>
+            </div>
+            <div class="scale-ends" aria-hidden="true"><span>0</span><span>100</span></div>
+            <p id="fan-help" class="help">左右拉動. 輸出愈大, 推走嘅空氣愈多, 貼天花力愈大.</p>
+            <div class="presets" role="group" aria-label="快速試幾個輸出">
+              <button type="button" data-fan="30">30 太細</button>
+              <button type="button" data-fan="60">60 剛剛</button>
+              <button type="button" data-fan="90">90 好大</button>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>風扇輸出同貼天花力</h3>
+            <p class="help">推走空氣幾大力, 推返架車就幾大力. 我哋用同一把尺, 所以兩個數字一樣.</p>
+            <div class="pair">
+              <div class="meter">
+                <div class="meter-top">
+                  <span>風扇輸出</span>
+                  <strong id="fan-num">75%</strong>
+                </div>
+                <div class="track"><span class="fill fill-fan" id="fan-fill"></span></div>
+                <p class="quiet">推走空氣</p>
+              </div>
+              <p class="eq" aria-hidden="true">=</p>
+              <div class="meter">
+                <div class="meter-top">
+                  <span>貼天花力</span>
+                  <strong id="hold-num">75</strong>
+                </div>
+                <div class="track">
+                  <span class="fill fill-hold" id="hold-fill"></span>
+                  <span class="gmark" id="gmark"><span class="sr-only">重力位置</span></span>
+                </div>
+                <p class="quiet">推返向天花. 橙線係重力.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="block">
+            <h3>邊個大啲?</h3>
+            <div class="vs">
+              <div class="vs-col">
+                <div class="vs-num" id="vs-hold-num">75</div>
+                <div class="vs-track">
+                  <span class="vs-line" id="vs-line-hold"></span>
+                  <span class="vs-fill fill-hold" id="vs-hold"></span>
+                </div>
+                <div class="vs-name">吸力</div>
+                <div class="quiet">貼天花</div>
+              </div>
+              <p class="vs-mid" id="vs-mid">大過</p>
+              <div class="vs-col">
+                <div class="vs-num" id="vs-weight-num" data-weight>60</div>
+                <div class="vs-track">
+                  <span class="vs-line"></span>
+                  <span class="vs-fill fill-weight" id="vs-weight"></span>
+                </div>
+                <div class="vs-name">重力</div>
+                <div class="quiet">拉向地面</div>
+              </div>
+            </div>
+            <p class="verdict" id="verdict"></p>
+            <p class="net" id="net"></p>
+          </div>
+
+          <button type="button" class="reset" id="reset">重置再試</button>
+          <p class="help" id="reset-help">跌到地面之後, 加大風扇, 再撳重置. 如果仲喺半空, 可以即刻拉大風扇, 試下推返上天花.</p>
+        </section>
+      </div>
+
+      <section class="card chart-card" aria-labelledby="chart-title">
+        <div>
+          <h2 id="chart-title">風扇愈大, 吸力愈高</h2>
+          <p class="help">橫軸係風扇輸出, 直軸係力. 斜線就係貼天花力, 跟住風扇上升. 橙色橫線係重力, 數值係 <strong data-weight>60</strong>, 唔會變.</p>
+          <p class="help">個點高過橫線, 吸力贏, 架車貼住天花. 個點低過橫線, 重力贏, 架車跌.</p>
+          <p class="chart-now" id="chart-now"></p>
+          <ul class="legend legend-inline">
+            <li><i class="swatch swatch-hold"></i>綠色區: 貼得住</li>
+            <li><i class="swatch swatch-fall"></i>紅色區: 會跌</li>
+            <li><i class="swatch swatch-line"></i>斜線: 貼天花力</li>
+            <li><i class="swatch swatch-dash"></i>橫線: 重力</li>
+          </ul>
+        </div>
+        <div class="chart-frame">
+          <svg id="chart" class="chart" viewBox="0 0 360 230" aria-hidden="true"></svg>
+        </div>
+      </section>
+
+      <section class="card science" aria-labelledby="science-title">
+        <h2 id="science-title">科學原理</h2>
+        <div class="science-grid">
+          <div>
+            <ol class="principles">
+              <li>
+                <span class="num">1</span>
+                <p>重力會拉架車向地面. 架車倒掛天花嗰陣, 重力就係想拉佢跌落嚟.</p>
+              </li>
+              <li>
+                <span class="num">2</span>
+                <p>風扇將空氣推離天花, 推向下. 空氣被推走, 就用同樣大嘅力將架車推返向上, 推向天花. 你推一樣嘢, 佢就推返你, 一樣大. 呢個係牛頓第三定律.</p>
+              </li>
+              <li>
+                <span class="num">3</span>
+                <p>所以風扇輸出愈大, 貼天花嘅力愈大, 而且數值一樣. 呢股力大過或者等於重力, 架車就貼住. 細過重力, 就跌.</p>
+              </li>
+            </ol>
+            <aside class="callout">
+              <h3>唔好搞錯</h3>
+              <p>畫面有個「吸力」錶, 因為好多人都會咁講. 但風扇唔係吸塵機, 唔會吸住天花, 亦冇魔法. 佢做嘅事係推走空氣, 架車先被推返貼住天花.</p>
+            </aside>
+          </div>
+          <figure class="diagram-wrap">
+            <h3>力圖</h3>
+            <svg class="diagram" viewBox="0 0 300 360" role="img" aria-label="力圖. 貼天花力向上指向天花. 重力向下指向地面. 風扇將空氣推向下, 方向同貼天花力相反.">
+              <rect x="24" y="16" width="252" height="32" rx="8" fill="#c5d4e0" stroke="#17202b" stroke-width="3"/>
+              <text x="150" y="38" text-anchor="middle" font-size="16" font-weight="700" fill="#17202b">天花</text>
+              <line x1="150" y1="118" x2="150" y2="62" stroke="#0e7c66" stroke-width="7" stroke-linecap="round"/>
+              <polygon points="150,48 162,70 138,70" fill="#0e7c66"/>
+              <text x="168" y="86" font-size="16" font-weight="700" fill="#17202b">貼天花力</text>
+              <circle cx="112" cy="124" r="13" fill="#17202b"/>
+              <circle cx="196" cy="124" r="13" fill="#17202b"/>
+              <circle cx="112" cy="124" r="6" fill="#f4f7fa"/>
+              <circle cx="196" cy="124" r="6" fill="#f4f7fa"/>
+              <rect x="86" y="132" width="136" height="48" rx="10" fill="#ef4d4d" stroke="#17202b" stroke-width="3"/>
+              <text x="154" y="162" text-anchor="middle" font-size="16" font-weight="700" fill="#17202b">車</text>
+              <circle cx="154" cy="196" r="20" fill="#1d4e89" stroke="#17202b" stroke-width="3"/>
+              <circle cx="154" cy="196" r="6" fill="#f4e2a8"/>
+              <line x1="154" y1="218" x2="154" y2="252" stroke="#1d4e89" stroke-width="5" stroke-linecap="round"/>
+              <polygon points="154,266 164,246 144,246" fill="#1d4e89"/>
+              <text x="172" y="250" font-size="16" font-weight="700" fill="#17202b">推走空氣</text>
+              <line x1="78" y1="200" x2="78" y2="268" stroke="#c2410c" stroke-width="7" stroke-linecap="round"/>
+              <polygon points="78,284 90,262 66,262" fill="#c2410c"/>
+              <text x="28" y="246" font-size="16" font-weight="700" fill="#17202b">重力</text>
+              <rect x="24" y="308" width="252" height="32" rx="8" fill="#e0b56a" stroke="#17202b" stroke-width="3"/>
+              <text x="150" y="330" text-anchor="middle" font-size="16" font-weight="700" fill="#17202b">地面</text>
+            </svg>
+            <figcaption>綠色箭咀推向天花. 橙色箭咀係重力, 拉向地面. 藍色箭咀係被推走嘅空氣, 方向同貼天花力相反.</figcaption>
+          </figure>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>畀家長同老師: 打開方法同科學說明寫喺 README. 畫面嘅數字係簡化模型, 方便比較大細. 呢度唔係話某一架真車已經可以倒掛行.</p>
+    </footer>
+  </div>
+  <noscript>
+    <p>請開返 JavaScript, 呢個實驗先至郁到.</p>
+  </noscript>
+  <script src="main.js"></script>
+</body>
+</html>
