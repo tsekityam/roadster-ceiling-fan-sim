@@ -1,54 +1,70 @@
-# 倒掛天花嘅風扇車
+# 風扇車下壓力模擬
 
-小學科學互動頁. 調校一架想像中嘅大風扇車, 睇佢可唔可以倒掛貼住天花.
-
-畫面用繁體中文 (香港用語). 打開瀏覽器就玩到, 唔使安裝, 亦冇後端.
+面向**中學物理**學生的互動模擬: 以體積流量、壓力差與力平衡, 分析「車尾風扇抽車底空氣」能否產生足以倒掛天花板的下壓力.
 
 網上版: [https://kytse.com/roadster-ceiling-fan-sim/](https://kytse.com/roadster-ceiling-fan-sim/)
 
-## 點打開
+繁體中文介面. 無需安裝後端; 以瀏覽器開啟即可.
 
-1. 雙擊 `index.html`, 用瀏覽器打開.
-2. 或者喺呢個資料夾開終端機, 執行:
+## 開啟方法
+
+1. 雙擊 `index.html`, 或以瀏覽器開啟.
+2. 或在本目錄執行:
 
 ```
 python3 -m http.server 8741
 ```
 
-然後去 [http://127.0.0.1:8741](http://127.0.0.1:8741).
+然後前往 [http://127.0.0.1:8741](http://127.0.0.1:8741).
 
-平板橫放會舒服啲, 直放都用到.
+## 學習目標
 
-## 點玩
+- 應用力平衡: 倒掛時比較下壓力 F 與重量 mg.
+- 理解壓力產生的力: F = ΔP · A.
+- 把風扇輸出連到體積流量 Q, 再連到 ΔP 與 F.
+- 辨識模型假設與局限 (非量產車實測).
 
-- 拉動「風扇輸出」(0 到 100), 或者撳 -10 / +10, 又或者試 30, 60, 90.
-- 畫面會同步顯示:
-  - 抽出空氣流量 Q (m3/s 同公升/秒)
-  - 車底壓力差 ΔP (kPa)
-  - 下壓力 F (kN / kgf)
-  - 同車重 1500 kg 比較
-- 當下壓力大過或者等於車重, 架車可以倒掛.
-- 細過車重就會跌.
+## 模型方程
 
-### 重現「由地面升上天花」
+設風扇相對輸出 u ∈ [0, 1], 車底有效面積 A, 質量 m:
 
-1. 撳綠色掣 **由地面升上天花**.
-2. 或者撳 **放喺地面自己試**, 再拉風扇到 **60% 或以上** (約 3.0 m3/s).
-3. 撳 **重置到天花** 可以即刻返去天花開始.
+1. **體積流量**  
+   Q = Q_max · u
 
-## 畀家長同老師
+2. **壓力差 (洩漏主導近似)**  
+   若洩漏 Q ≈ C_d A_leak √(2ΔP / ρ), 則  
+   ΔP = K · Q²
 
-課堂簡化模型, 唔係任何一架生產車嘅實測. 公開風扇車布局係車尾擴散器風扇由車底抽氣再向外吹.
+3. **下壓力**  
+   F = ΔP · A
 
-簡化公式:
+4. **可貼條件**  
+   F ≥ mg
 
-1. Q = Qmax x (風扇%/100), Qmax = 5.0 m3/s
-2. ΔP = K x Q^2 (漏氣型關係: 流量愈大, 要更大壓力差)
-3. F = ΔP x A, A = 2.5 m2
-4. 車重 mg, m = 1500 kg; 當 F >= mg 可倒掛
+### 本頁預設參數
 
-流量數量級參考公開風扇車研究大約幾立方米每秒. 數字係示範值, 方便比較, 唔係儀表板實測.
+| 符號 | 數值 | 說明 |
+|------|------|------|
+| m | 1500 kg | 示範車質量 |
+| g | 9.81 m/s² | 重力加速度 |
+| A | 2.5 m² | 車底有效面積 |
+| Q_max | 5.0 m³/s | 最大體積流量 |
+| 臨界 u | 60% | 使 F = mg |
+| 臨界 Q | 3.0 m³/s | 對應臨界點 |
 
-## For parents and teachers
+K 由臨界點标定: 當 Q = 3.0 m³/s 時令 F = mg, 得  
+K = (mg / A) / Q² ≈ 654 Pa·s²/m⁶.
 
-Classroom model, not production-car telemetry. Rear fans extract underbody air. The UI shows volume flow Q, pressure drop ΔP, and downforce F = ΔP x area versus a 1500 kg car. Q scales with the slider; ΔP scales with Q squared. Stick threshold is about 3.0 m3/s (60% fan). Order-of-magnitude values only.
+## 操作提示
+
+- 拉動風扇輸出, 即時讀取 Q、ΔP、F, 並與 mg 比較.
+- **示範: 地面升至天花板** 可重現由 F &lt; mg 過渡到 F ≥ mg.
+- **放置於地面** 後自行調至 ≥ 60% 亦可重現上升.
+
+## 重要聲明
+
+此為**思想實驗 / 課堂模型**. 布局參考公開風扇車專利 (車尾擴散器風扇, 由車底抽氣), **並非**聲稱任何量產 Tesla Roadster 或其他市售車輛已可倒掛行駛. 流量與力的數量級參考公開風扇車文獻中數 m³/s 與 kN 級力, 方便計算, 不是儀表板讀數.
+
+## For teachers
+
+Audience: senior secondary physics. SI units throughout (m³/s, Pa/kPa, N/kN), with kgf as a secondary reading. Core relations: Q ∝ u, ΔP ∝ Q², F = ΔP·A, stick iff F ≥ mg. Assumptions listed in the on-page model panel.

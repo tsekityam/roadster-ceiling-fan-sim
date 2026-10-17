@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>倒掛天花嘅風扇車</title>
-  <meta name="description" content="小學科學互動實驗: 調校大風扇, 睇貼天花力同重力, 理解架車點解可以倒掛, 又點解會跌.">
+  <title>風扇車下壓力模擬 | 中學物理</title>
+  <meta name="description" content="中學物理互動模擬: 以體積流量 Q、壓力差 ΔP 同下壓力 F=ΔP·A, 分析風扇車可否倒掛天花板.">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <a class="skip" href="#controls">跳到控制</a>
+  <a class="skip" href="#controls">跳到控制區</a>
   <div class="wrap">
     <header class="hero card">
       <div class="stripes" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="hero-inner">
-        <p class="eyebrow">小學科學互動實驗</p>
-        <h1>倒掛天花嘅風扇車</h1>
-        <p class="lede">科學家同工程師喺諗: 如果車尾有幾把大力風扇, 由車底抽氣, 可唔可以倒掛天花?</p>
-        <p class="disclaimer">呢個係思想實驗, 跟公開風扇車設計講法. 風扇輸出喺車尾, 唔係車頂. 唔係話任何一架出街嘅車已經做到.</p>
+        <p class="eyebrow">中學物理 · 力學 / 流體簡介</p>
+        <h1>風扇車下壓力模擬</h1>
+        <p class="lede">若車尾擴散器內有強力涵道風扇, 由車底抽出空氣並形成壓力差, 下壓力可否大過重量而使車輛倒掛於天花板?</p>
+        <p class="disclaimer">此為思想實驗與課堂模型, 參考公開風扇車專利布局 (風扇位於車尾, 並非車頂). 並非聲稱任何量產車已可倒掛行駛.</p>
         <ol class="howto">
-          <li>拉動拉桿, 改抽出空氣流量.</li>
-          <li>睇流量、壓力差同下壓力一齊變.</li>
-          <li>下壓力細過車重, 架車就跌.</li>
+          <li>調節風扇輸出, 改變體積流量 Q.</li>
+          <li>觀察 ΔP 與 F = ΔP · A 的同步變化.</li>
+          <li>比較 F 與 mg: F &lt; mg 則墜落, F ≥ mg 則可贴住.</li>
         </ol>
       </div>
     </header>
@@ -131,27 +131,27 @@
                     <span class="head head-up"></span>
                     <span class="shaft" id="shaft-up"></span>
                   </div>
-                  <span class="arrow-label">下壓力 <b id="arrow-hold">2344</b> kgf</span>
+                  <span class="arrow-label">F <b id="arrow-hold">2344</b> kgf</span>
                 </div>
                 <div class="arrow arrow-down" id="arrow-down">
                   <div class="arrow-graphic">
                     <span class="shaft" id="shaft-down"></span>
                     <span class="head head-down"></span>
                   </div>
-                  <span class="arrow-label">車重 <b data-weight-kg>1500</b> kg</span>
+                  <span class="arrow-label">mg <b data-weight-kg>1500</b> kg</span>
                 </div>
               </div>
             </div>
           </div>
           <ul class="legend">
-            <li><i class="swatch swatch-air"></i>藍色粒子: 車尾風扇向外吹出嘅空氣</li>
-            <li><i class="swatch swatch-hold"></i>綠色虛線: 車底抽氣造成壓力差</li>
-            <li><i class="swatch swatch-weight"></i>向下箭咀: 車重</li>
+            <li><i class="swatch swatch-air"></i>藍色粒子: 車尾出口排出的空氣</li>
+            <li><i class="swatch swatch-hold"></i>綠色虛線: 車底抽氣 / 低壓區</li>
+            <li><i class="swatch swatch-weight"></i>向下箭咀: 重量 mg</li>
           </ul>
         </section>
 
         <section class="card controls" id="controls" aria-labelledby="controls-title">
-          <h2 id="controls-title">控制同比較</h2>
+          <h2 id="controls-title">參數與力平衡</h2>
           <div class="status" id="status">
             <p class="status-title" id="status-title">可以倒掛</p>
             <p class="status-body" id="status-body"></p>
@@ -160,64 +160,64 @@
 
           <div class="fan-block">
             <div class="fan-head">
-              <label for="fan-slider">風扇輸出 <span class="quiet">開幾大</span></label>
+              <label for="fan-slider">風扇輸出 u <span class="quiet">相對轉速 / 輸出</span></label>
               <p class="big-num"><span id="big-fan">75</span><span class="unit">%</span></p>
             </div>
             <div class="slider-row">
-              <button type="button" id="fan-down" aria-label="風扇輸出減少 10">-10</button>
+              <button type="button" id="fan-down" aria-label="風扇輸出減少 10%">-10%</button>
               <div class="slider-wrap">
                 <div class="slider-track" aria-hidden="true"><span id="slider-fill"></span></div>
                 <input id="fan-slider" class="fan-slider" type="range" min="0" max="100" step="1" value="75" aria-describedby="fan-help">
               </div>
-              <button type="button" id="fan-up" aria-label="風扇輸出增加 10">+10</button>
+              <button type="button" id="fan-up" aria-label="風扇輸出增加 10%">+10%</button>
             </div>
-            <div class="scale-ends" aria-hidden="true"><span>0</span><span>100</span></div>
-            <p id="fan-help" class="help">左右拉動. 輸出愈大, 每秒抽出嘅空氣愈多, 車底壓力差愈大, 下壓力愈大.</p>
-            <div class="presets" role="group" aria-label="快速試幾個輸出">
-              <button type="button" data-fan="30">30 太細</button>
-              <button type="button" data-fan="60">60 剛剛夠</button>
-              <button type="button" data-fan="90">90 好大</button>
+            <div class="scale-ends" aria-hidden="true"><span>0%</span><span>100%</span></div>
+            <p id="fan-help" class="help">模型取 Q = Q<sub>max</sub> · u. 提高 u 會增加體積流量, 從而提高 ΔP 與下壓力 F.</p>
+            <div class="presets" role="group" aria-label="預設輸出">
+              <button type="button" data-fan="30">30% 不足</button>
+              <button type="button" data-fan="60">60% 臨界</button>
+              <button type="button" data-fan="90">90% 充足</button>
             </div>
           </div>
 
           <div class="block">
-            <h3>抽出幾多空氣, 產生幾大下壓力?</h3>
-            <p class="help">簡化關係: 風扇抽走空氣流量 Q, 車底壓力變低 (壓力差 ΔP), 下壓力 F = ΔP x 車底面積. 車底面積取 <span data-area>2.5</span> m2, 車重 <span data-weight-kg>1500</span> kg.</p>
+            <h3>由流量到下壓力</h3>
+            <p class="help">封閉車底近似: 風扇抽出體積流量 Q, 形成壓力差 ΔP, 下壓力 F = ΔP · A. 取 A = <span data-area>2.5</span> m², m = <span data-weight-kg>1500</span> kg, g = 9.81 m/s².</p>
             <div class="phys-chain">
               <div class="meter">
                 <div class="meter-top">
-                  <span>抽出空氣 Q</span>
-                  <strong><span id="q-num">3.75</span> m3/s</strong>
+                  <span>體積流量 Q</span>
+                  <strong><span id="q-num">3.75</span> m³/s</strong>
                 </div>
                 <div class="track"><span class="fill fill-fan" id="q-fill"></span></div>
-                <p class="quiet">約 <span id="q-liters">3750</span> 公升/秒. 最大約 <span data-q-max>5.0</span> m3/s.</p>
+                <p class="quiet"><span id="q-liters">3750</span> L/s · Q<sub>max</sub> = <span data-q-max>5.0</span> m³/s</p>
               </div>
               <div class="meter">
                 <div class="meter-top">
-                  <span>車底壓力差 ΔP</span>
+                  <span>壓力差 ΔP</span>
                   <strong><span id="dp-num">5.9</span> kPa</strong>
                 </div>
                 <div class="track"><span class="fill fill-dp" id="dp-fill"></span></div>
-                <p class="quiet">壓力差跟 Q 嘅平方升. 抽得愈快, 吸得愈勁.</p>
+                <p class="quiet">模型: ΔP = K · Q² (縫隙洩漏主導時常見近似)</p>
               </div>
               <div class="meter">
                 <div class="meter-top">
                   <span>下壓力 F</span>
-                  <strong><span id="hold-num">2344</span> kgf</strong>
+                  <strong><span id="hold-kn">23.0</span> kN</strong>
                 </div>
                 <div class="track">
                   <span class="fill fill-hold" id="hold-fill"></span>
-                  <span class="gmark" id="gmark"><span class="sr-only">車重位置</span></span>
+                  <span class="gmark" id="gmark"><span class="sr-only">重量位置</span></span>
                 </div>
-                <p class="quiet"><span id="hold-kn">23.0</span> kN. 橙線係車重 <span data-weight-kg>1500</span> kg.</p>
+                <p class="quiet">約 <span id="hold-num">2344</span> kgf · 橙線 = mg = <span data-weight-kn>14.7</span> kN</p>
               </div>
             </div>
-            <p class="formula" id="formula-live">F = ΔP x 面積</p>
+            <p class="formula" id="formula-live">F = ΔP · A</p>
             <div class="track hidden-track" aria-hidden="true"><span class="fill fill-fan" id="fan-fill"></span></div>
           </div>
 
           <div class="block">
-            <h3>邊個大啲?</h3>
+            <h3>力平衡: F 對 mg</h3>
             <div class="vs">
               <div class="vs-col">
                 <div class="vs-num" id="vs-hold-num">2344</div>
@@ -225,17 +225,17 @@
                   <span class="vs-line" id="vs-line-hold"></span>
                   <span class="vs-fill fill-hold" id="vs-hold"></span>
                 </div>
-                <div class="vs-name">下壓力</div>
+                <div class="vs-name">F</div>
                 <div class="quiet">kgf</div>
               </div>
-              <p class="vs-mid" id="vs-mid">大過</p>
+              <p class="vs-mid" id="vs-mid">></p>
               <div class="vs-col">
                 <div class="vs-num" id="vs-weight-num" data-weight-kg>1500</div>
                 <div class="vs-track">
                   <span class="vs-line"></span>
                   <span class="vs-fill fill-weight" id="vs-weight"></span>
                 </div>
-                <div class="vs-name">車重</div>
+                <div class="vs-name">mg</div>
                 <div class="quiet">kg</div>
               </div>
             </div>
@@ -244,25 +244,25 @@
           </div>
 
           <div class="action-row">
-            <button type="button" class="reset" id="reset">重置到天花</button>
-            <button type="button" class="ground-demo" id="from-ground">由地面升上天花</button>
+            <button type="button" class="reset" id="reset">重置至天花板</button>
+            <button type="button" class="ground-demo" id="from-ground">示範: 地面升至天花板</button>
           </div>
-          <button type="button" class="ground-place" id="place-ground">放喺地面自己試</button>
-          <p class="help" id="reset-help">想重現「由地面倒掛上天花」: 撳「由地面升上天花」, 或者放喺地面後拉到 60% (約 <span data-q-stick>3.0</span> m3/s) 或以上.</p>
+          <button type="button" class="ground-place" id="place-ground">放置於地面 (手動)</button>
+          <p class="help" id="reset-help">要重現地面升至天花板: 按示範掣, 或先放置於地面再把輸出調至 ≥ 60% (約 Q = <span data-q-stick>3.0</span> m³/s, 即 F = mg).</p>
         </section>
       </div>
 
       <section class="card chart-card" aria-labelledby="chart-title">
         <div>
-          <h2 id="chart-title">抽出空氣愈多, 下壓力愈大</h2>
-          <p class="help">橫軸係抽出空氣流量 Q (m3/s). 直軸係下壓力 (kN). 綠色曲線跟 Q 嘅平方升. 橙色橫線係車重 <strong data-weight-kn>14.7</strong> kN (<span data-weight-kg>1500</span> kg).</p>
-          <p class="help">個點高過橫線, 下壓力贏, 架車貼住天花. 個點低過橫線, 車重贏, 架車跌.</p>
+          <h2 id="chart-title">F–Q 關係圖</h2>
+          <p class="help">橫軸: 體積流量 Q (m³/s). 縱軸: 下壓力 F (kN). 綠色曲線對應 F ∝ Q². 橙色水平線為重量 mg = <strong data-weight-kn>14.7</strong> kN (m = <span data-weight-kg>1500</span> kg).</p>
+          <p class="help">工作點在線以上: F ≥ mg, 可贴天花板; 在線以下: F &lt; mg, 淨力指向地面.</p>
           <p class="chart-now" id="chart-now"></p>
           <ul class="legend legend-inline">
-            <li><i class="swatch swatch-hold"></i>綠色區: 貼得住</li>
-            <li><i class="swatch swatch-fall"></i>紅色區: 會跌</li>
-            <li><i class="swatch swatch-line"></i>曲線: 下壓力</li>
-            <li><i class="swatch swatch-dash"></i>橫線: 車重</li>
+            <li><i class="swatch swatch-hold"></i>可貼區 (F ≥ mg)</li>
+            <li><i class="swatch swatch-fall"></i>墜落區 (F &lt; mg)</li>
+            <li><i class="swatch swatch-line"></i>F(Q) 曲線</li>
+            <li><i class="swatch swatch-dash"></i>mg 水平線</li>
           </ul>
         </div>
         <div class="chart-frame">
@@ -271,36 +271,40 @@
       </section>
 
       <section class="card science" aria-labelledby="science-title">
-        <h2 id="science-title">科學原理</h2>
+        <h2 id="science-title">物理模型與假設</h2>
         <div class="science-grid">
           <div>
             <ol class="principles">
               <li>
                 <span class="num">1</span>
-                <p>重力會拉架車向地面. 架車倒掛天花嗰陣, 重力就係想拉佢跌落嚟.</p>
+                <p><strong>力平衡.</strong> 倒掛於天花板時, 重量 mg 指向地面. 若車底相對外界有壓強差 ΔP, 則壓力產生指向天花板的下壓力 (對地面而言的 downforce) F = ΔP · A. 可貼條件為 F ≥ mg.</p>
               </li>
               <li>
                 <span class="num">2</span>
-                <p>真正設計入面, 風扇唔係裝喺車頂. 大概有四把風扇裝喺車尾擴散器. 佢哋由車底抽走空氣, 再喺車尾向外吹出.</p>
+                <p><strong>裝置布局.</strong> 公開風扇車設計把涵道風扇放在車尾擴散器: 由車底入口抽氣, 於車尾出口排出. 重點是降低車底壓強, 而非「車頂風扇向下推氣」的純反作用簡圖.</p>
               </li>
               <li>
                 <span class="num">3</span>
-                <p>下壓力可以用 F = ΔP x A 估. A 係車底面積. ΔP 係車底同外面嘅壓力差. 抽出空氣愈多, ΔP 愈大, F 愈大. F 大過或者等於車重 (mg) 就可以倒掛.</p>
+                <p><strong>本模擬的構成方程.</strong> Q = Q<sub>max</sub> · u; ΔP = K · Q²; F = ΔP · A. ΔP ∝ Q² 對應「洩漏主導」近似: 若洩漏流量 Q ≈ C<sub>d</sub> A<sub>leak</sub> √(2ΔP/ρ), 則 ΔP ∝ Q². K 由臨界點 (F = mg) 标定.</p>
               </li>
             </ol>
             <aside class="callout">
-              <h3>數字說明</h3>
-              <p>課堂簡化模型: Q 跟風扇百分比成正比, ΔP 跟 Q 平方成正比. 車重 <span data-weight-kg>1500</span> kg, 面積 <span data-area>2.5</span> m2, 最大流量約 <span data-q-max>5.0</span> m3/s. 數字係示範值, 方便比較, 唔係某一架真車嘅實測.</p>
+              <h3>參數與局限</h3>
+              <p>m = <span data-weight-kg>1500</span> kg, A = <span data-area>2.5</span> m², Q<sub>max</sub> = <span data-q-max>5.0</span> m³/s, 臨界約 u = 60% (Q ≈ <span data-q-stick>3.0</span> m³/s). 忽略黏滯阻力、裙邊動態密封、風扇效率曲線與空氣密度變化. 數量級參考公開風扇車文獻中數 m³/s 流量與 kN 級力, 並非量產車實測數據.</p>
+            </aside>
+            <aside class="callout callout-eq">
+              <h3>可自行驗算</h3>
+              <p>mg = 1500 × 9.81 = 1.47×10⁴ N. 臨界 ΔP = mg / A ≈ 5.89 kPa. 若 Q = 3.0 m³/s 時剛好 F = mg, 則 K = ΔP / Q² ≈ 654 Pa·s²/m⁶. 再代入任一 Q 可求出 F.</p>
             </aside>
           </div>
           <figure class="diagram-wrap">
-            <h3>力圖</h3>
-            <svg class="diagram" viewBox="0 0 300 360" role="img" aria-label="力圖. 車尾風扇抽走車底空氣. 貼天花力向上. 重力向下. 空氣從車尾吹出.">
+            <h3>受力簡圖 (倒掛)</h3>
+            <svg class="diagram" viewBox="0 0 300 360" role="img" aria-label="受力圖. 車尾風扇抽出車底空氣. 下壓力 F 指向天花板. 重量 mg 指向地面.">
               <rect x="24" y="16" width="252" height="32" rx="8" fill="#c5d4e0" stroke="#17202b" stroke-width="3"/>
-              <text x="150" y="38" text-anchor="middle" font-size="16" font-weight="700" fill="#17202b">天花</text>
+              <text x="150" y="38" text-anchor="middle" font-size="16" font-weight="700" fill="#17202b">天花板</text>
               <line x1="150" y1="112" x2="150" y2="56" stroke="#0e7c66" stroke-width="7" stroke-linecap="round"/>
               <polygon points="150,42 162,64 138,64" fill="#0e7c66"/>
-              <text x="168" y="80" font-size="15" font-weight="700" fill="#17202b">貼天花力</text>
+              <text x="168" y="80" font-size="15" font-weight="700" fill="#17202b">F = ΔP·A</text>
               <circle cx="100" cy="118" r="12" fill="#17202b"/>
               <circle cx="170" cy="118" r="12" fill="#17202b"/>
               <circle cx="100" cy="118" r="5" fill="#f4f7fa"/>
@@ -316,27 +320,27 @@
               <text x="224" y="140" text-anchor="middle" font-size="13" font-weight="700" fill="#1d4e89">車尾</text>
               <line x1="252" y1="166" x2="286" y2="166" stroke="#1d4e89" stroke-width="5" stroke-linecap="round"/>
               <polygon points="294,166 278,156 278,176" fill="#1d4e89"/>
-              <text x="250" y="198" font-size="14" font-weight="700" fill="#17202b">吹出空氣</text>
+              <text x="236" y="198" font-size="14" font-weight="700" fill="#17202b">排出 Q</text>
               <path d="M120 136 C150 148 180 148 200 156" fill="none" stroke="#0e7c66" stroke-width="3" stroke-dasharray="5 4"/>
-              <text x="36" y="156" font-size="13" font-weight="700" fill="#0e7c66">抽車底氣</text>
+              <text x="28" y="156" font-size="13" font-weight="700" fill="#0e7c66">抽氣 → ΔP</text>
               <line x1="70" y1="200" x2="70" y2="268" stroke="#c2410c" stroke-width="7" stroke-linecap="round"/>
               <polygon points="70,284 82,262 58,262" fill="#c2410c"/>
-              <text x="28" y="246" font-size="16" font-weight="700" fill="#17202b">重力</text>
+              <text x="28" y="246" font-size="16" font-weight="700" fill="#17202b">mg</text>
               <rect x="24" y="308" width="252" height="32" rx="8" fill="#e0b56a" stroke="#17202b" stroke-width="3"/>
               <text x="150" y="330" text-anchor="middle" font-size="16" font-weight="700" fill="#17202b">地面</text>
             </svg>
-            <figcaption>綠色箭咀係貼天花力. 車尾藍色風扇抽走車底空氣再向外吹. 橙色箭咀係重力.</figcaption>
+            <figcaption>倒掛時 F 指向天花板, mg 指向地面. 淨力 F_net = F − mg (以指向天花板為正).</figcaption>
           </figure>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <p>畀家長同老師: 打開方法同科學說明寫喺 README. 畫面嘅數字係簡化模型, 方便比較大細. 呢度唔係話某一架真車已經可以倒掛行.</p>
+      <p>對象: 中學物理學生. 詳細方程與局限見 README. 數值為課堂示範模型, 並非聲稱量產車已可倒掛.</p>
     </footer>
   </div>
   <noscript>
-    <p>請開返 JavaScript, 呢個實驗先至郁到.</p>
+    <p>請啟用 JavaScript 以運行此模擬.</p>
   </noscript>
   <script src="main.js"></script>
 </body>

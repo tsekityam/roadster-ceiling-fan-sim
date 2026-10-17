@@ -995,9 +995,25 @@ button[aria-pressed="true"] {
   padding: 12px 14px;
 }
 
+.callout-eq {
+  background: #f4f7fa;
+  border-color: #17202b;
+}
+
 .callout h3 {
   color: #1d4e89;
   margin-bottom: 4px;
+}
+
+.callout-eq h3 {
+  color: #17202b;
+}
+
+.help sub,
+.formula sub,
+.callout sub,
+.quiet sub {
+  font-size: 0.75em;
 }
 
 .diagram-wrap {

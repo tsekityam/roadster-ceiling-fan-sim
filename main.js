@@ -233,11 +233,11 @@
     });
 
     var xName = svgEl("text", { x: (X(0) + X(100)) / 2, y: C.h - 2, "text-anchor": "middle", class: "axis-name" });
-    xName.textContent = "抽出空氣 Q (m3/s)";
+    xName.textContent = "Q (m³/s)";
     var yName = svgEl("text", { x: 14, y: 14, class: "axis-name" });
-    yName.textContent = "下壓力 (kN)";
+    yName.textContent = "F (kN)";
     var gName = svgEl("text", { x: X(100) + 6, y: Yforce(WEIGHT_N) + 5, class: "axis-name" });
-    gName.textContent = "車重";
+    gName.textContent = "mg";
 
     [stick, fall, axisX, axisY, gravity, relation, cross, cursor, dotHalo, dot, xName, yName, gName].forEach(function (node) {
       chart.appendChild(node);
@@ -273,7 +273,7 @@
     var phy = physicsFromFan(fan);
     slider.setAttribute(
       "aria-valuetext",
-      fan + "%, 抽出空氣 " + fmt(phy.Q, 2) + " 立方米每秒, 下壓力 " + fmt(phy.F_kgf, 0) + " 公斤力, 車重 " + CAR_MASS_KG + " 公斤"
+      "輸出 " + fan + "%, Q " + fmt(phy.Q, 2) + " 立方米每秒, F " + fmt(phy.F_kN, 1) + " 千牛頓, mg " + fmt(WEIGHT_N / 1000, 1) + " 千牛頓"
     );
     sliderFill.style.width = "calc((100% - " + THUMB + "px) * " + (fan / 100) + " + " + (THUMB / 2) + "px)";
     document.querySelectorAll("[data-fan]").forEach(function (btn) {
@@ -320,70 +320,72 @@
   function copyForState() {
     var phy = physicsFromFan(sim.fan);
     var nums =
-      "抽出空氣 " +
+      "Q = " +
       fmt(phy.Q, 2) +
-      " m3/s (" +
-      fmt(phy.Q_Ls, 0) +
-      " L/s), 下壓力 " +
+      " m³/s, ΔP = " +
+      fmt(phy.dP_kPa, 2) +
+      " kPa, F = " +
+      fmt(phy.F_kN, 1) +
+      " kN (" +
       fmt(phy.F_kgf, 0) +
-      " kgf, 車重 " +
-      CAR_MASS_KG +
-      " kg. ";
+      " kgf), mg = " +
+      fmt(WEIGHT_N / 1000, 1) +
+      " kN. ";
     if (sim.mode === "floor") {
       if (phy.stuck) {
         return {
           tone: "ok",
-          title: "準備升起",
+          title: "F > mg · 開始升向天花板",
           pill: "起飛",
-          body: nums + "下壓力大過車重, 架車正由地面升上天花!"
+          body: nums + "淨力指向天花板, 車輛正離開地面."
         };
       }
       return {
         tone: "bad",
-        title: "喺地面",
-        pill: "喺地面",
-        body: nums + "下壓力細過車重. 拉風扇到 " + FAN_STICK + "% 或以上 (約 " + fmt(Q_STICK, 1) + " m3/s), 就會升起!"
+        title: "地面 · F < mg",
+        pill: "地面",
+        body: nums + "提高輸出至 ≥ " + FAN_STICK + "% (Q ≥ " + fmt(Q_STICK, 1) + " m³/s) 使 F ≥ mg."
       };
     }
     if (sim.mode === "ceiling" && phy.stuck) {
       if (Math.abs(phy.F - WEIGHT_N) < WEIGHT_N * 0.02) {
         return {
           tone: "ok",
-          title: "啱啱夠",
-          pill: "貼住",
-          body: nums + "下壓力同車重差不多, 可以倒掛!"
+          title: "臨界平衡 F ≈ mg",
+          pill: "臨界",
+          body: nums + "剛好滿足可貼條件."
         };
       }
       return {
         tone: "ok",
-        title: "可以倒掛",
-        pill: "貼住行緊",
-        body: nums + "下壓力夠大, 頂住車重, 可以倒掛!"
+        title: "可貼天花板 · F ≥ mg",
+        pill: "可貼",
+        body: nums + "下壓力足以抵抗重量, 保持倒掛."
       };
     }
     if (phy.stuck && sim.vy < -0.05) {
       return {
         tone: "ok",
-        title: "推返上天花",
-        pill: "升緊",
-        body: nums + "下壓力夠大, 淨力推向天花."
+        title: "上升中 · F_net > 0",
+        pill: "上升",
+        body: nums + "F > mg, 加速度指向天花板."
       };
     }
     if (phy.stuck) {
       return {
         tone: "warn",
-        title: "減速中",
+        title: "減速中 · 仍 F ≥ mg",
         pill: "減速",
-        body: nums + "下壓力已經大過車重, 架車減速緊."
+        body: nums + "速度仍指向地面, 但淨力已改為指向天花板."
       };
     }
-    var gapKg = CAR_MASS_KG - phy.F_kgf;
-    var title = gapKg >= 600 ? "跌得快" : gapKg >= 200 ? "跌緊" : "慢慢跌";
+    var gapN = WEIGHT_N - phy.F;
+    var title = gapN >= 6000 ? "快速墜落" : gapN >= 2000 ? "墜落中" : "緩慢墜落";
     return {
       tone: "bad",
-      title: title,
+      title: title + " · F < mg",
       pill: title,
-      body: nums + "下壓力細過車重, 跌緊!"
+      body: nums + "淨力指向地面."
     };
   }
 
@@ -651,33 +653,24 @@
     var fan = sim.fan;
     var phy = physicsFromFan(fan);
     var copy = copyForState();
-    var cmp = phy.F > WEIGHT_N ? "大過" : phy.F < WEIGHT_N ? "細過" : "等於";
-    var netKg = phy.F_kgf - CAR_MASS_KG;
+    var cmp = phy.F > WEIGHT_N ? ">" : phy.F < WEIGHT_N ? "<" : "=";
+    var netN = phy.F - WEIGHT_N;
     var netText =
-      netKg > 0
-        ? "淨力: 下壓力贏約 " + fmt(netKg, 0) + " kgf"
-        : netKg < 0
-          ? "淨力: 車重贏約 " + fmt(-netKg, 0) + " kgf"
-          : "淨力: 打和";
-    var verdict =
-      "下壓力 " +
-      fmt(phy.F_kgf, 0) +
-      " kgf (" +
-      fmt(phy.F_kN, 1) +
-      " kN) " +
-      cmp +
-      " 車重 " +
-      CAR_MASS_KG +
-      " kg";
+      "F_net = F − mg = " +
+      fmt(netN / 1000, 2) +
+      " kN (" +
+      (netN > 0 ? "指向天花板" : netN < 0 ? "指向地面" : "平衡") +
+      ")";
+    var verdict = "F = " + fmt(phy.F_kN, 2) + " kN  " + cmp + "  mg = " + fmt(WEIGHT_N / 1000, 2) + " kN";
     var chartText =
-      "而家: 抽出 " +
+      "工作點: Q = " +
       fmt(phy.Q, 2) +
-      " m3/s, 壓力差 " +
+      " m³/s, ΔP = " +
       fmt(phy.dP_kPa, 2) +
-      " kPa, 下壓力 " +
-      fmt(phy.F_kN, 1) +
+      " kPa, F = " +
+      fmt(phy.F_kN, 2) +
       " kN. " +
-      (phy.stuck ? "高過車重線, 貼得住." : "低過車重線, 會跌.");
+      (phy.stuck ? "位於 F ≥ mg 區." : "位於 F < mg 區.");
 
     var key = [fan, sim.mode, copy.title, Math.sign(sim.vy)].join("|");
     if (key === lastReadout) {
@@ -712,13 +705,13 @@
     document.getElementById("net").textContent = netText;
     document.getElementById("chart-now").textContent = chartText;
     document.getElementById("formula-live").textContent =
-      "F = " +
+      "F = ΔP · A = " +
       fmt(phy.dP_kPa, 2) +
-      " kPa x " +
+      " kPa × " +
       fmt(AREA_M2, 1) +
-      " m2 = " +
-      fmt(phy.F_kN, 1) +
-      " kN (約 " +
+      " m² = " +
+      fmt(phy.F_kN, 2) +
+      " kN  (= " +
       fmt(phy.F_kgf, 0) +
       " kgf)";
 
