@@ -2,7 +2,9 @@
 
 小學科學互動頁. 調校一架想像中嘅大風扇車, 睇佢可唔可以倒掛貼住天花.
 
-畫面用繁體中文 (香港用語). 打開瀏覽器就玩到, 唔使安裝, 唔使上網, 亦冇後端.
+畫面用繁體中文 (香港用語). 打開瀏覽器就玩到, 唔使安裝, 亦冇後端.
+
+網上版: [https://tsekityam.github.io/roadster-ceiling-fan-sim/](https://tsekityam.github.io/roadster-ceiling-fan-sim/)
 
 ## 點打開
 
