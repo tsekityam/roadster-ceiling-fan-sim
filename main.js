@@ -54,7 +54,11 @@
     particles: [],
     dusts: [],
     emitAcc: 0,
-    impact: false
+    impact: false,
+    demoClimb: false,
+    demoFan: 15,
+    demoTarget: 95,
+    demoWait: 0
   };
 
   var puffNodes = [];
@@ -227,6 +231,30 @@
     sim.dusts.length = 0;
     sim.impact = false;
     sim.wheelAngle = 0;
+    sim.demoClimb = false;
+  }
+
+  // Put the car on the ground so kids can raise the rear fans and watch it climb.
+  function placeOnGround(fanValue) {
+    sim.mode = "floor";
+    sim.y = 1;
+    sim.vy = 0;
+    sim.x = 0.32;
+    sim.dir = 1;
+    sim.particles.length = 0;
+    sim.dusts.length = 0;
+    sim.impact = false;
+    sim.demoClimb = false;
+    setFan(fanValue == null ? 20 : fanValue);
+  }
+
+  // Reproduce ground -> ceiling: land weak, then ramp fan until it lifts and sticks.
+  function playGroundToCeiling() {
+    placeOnGround(15);
+    sim.demoClimb = true;
+    sim.demoFan = 15;
+    sim.demoTarget = 95;
+    sim.demoWait = 0.7;
   }
 
   function copyForState() {
@@ -235,17 +263,17 @@
     if (sim.mode === "floor") {
       if (fan >= WEIGHT) {
         return {
-          tone: "bad",
-          title: "已經落地",
-          pill: "落地",
-          body: nums + "吸力夠大, 不過要撳重置先返上天花."
+          tone: "ok",
+          title: "準備升起",
+          pill: "起飛",
+          body: nums + "吸力夠大, 架車正由地面升上天花!"
         };
       }
       return {
         tone: "bad",
-        title: "跌咗",
-        pill: "跌咗",
-        body: nums + "風扇太細力, 吸力細過重力, 跌咗!"
+        title: "喺地面",
+        pill: "喺地面",
+        body: nums + "風扇太細力, 吸力細過重力. 拉高到 60 或以上, 就會由地面升上天花!"
       };
     }
     if (sim.mode === "ceiling" && fan >= WEIGHT) {
@@ -348,7 +376,26 @@
 
     if (sim.mode === "floor") {
       sim.y = 1;
-      sim.vy = 0;
+      if (hold >= WEIGHT) {
+        // Strong enough rear-fan downforce: leave the ground and climb to the ceiling.
+        sim.mode = "air";
+        sim.vy = -0.55;
+        sim.impact = true;
+      } else {
+        sim.vy = 0;
+      }
+    }
+
+    if (sim.demoClimb) {
+      if (sim.demoWait > 0) {
+        sim.demoWait -= dt;
+      } else {
+        sim.demoFan = Math.min(sim.demoTarget, sim.demoFan + 55 * dt);
+        setFan(Math.round(sim.demoFan));
+        if (sim.fan >= sim.demoTarget && sim.mode === "ceiling") {
+          sim.demoClimb = false;
+        }
+      }
     }
 
     if (!reduceMotion) {
@@ -561,7 +608,7 @@
     var pill = document.getElementById("stage-pill");
     pill.textContent = copy.pill;
     pill.className = "tag is-" + copy.tone;
-    resetBtn.classList.toggle("is-needed", sim.mode === "floor");
+    resetBtn.classList.toggle("is-needed", sim.mode === "floor" && sim.fan < WEIGHT);
 
     moveChartDot(fan, hold);
 
@@ -643,6 +690,18 @@
     });
   });
   resetBtn.addEventListener("click", resetSim);
+  var groundBtn = document.getElementById("from-ground");
+  if (groundBtn) {
+    groundBtn.addEventListener("click", function () {
+      playGroundToCeiling();
+    });
+  }
+  var groundManualBtn = document.getElementById("place-ground");
+  if (groundManualBtn) {
+    groundManualBtn.addEventListener("click", function () {
+      placeOnGround(20);
+    });
+  }
 
   if (motionQuery.addEventListener) {
     motionQuery.addEventListener("change", function (event) {

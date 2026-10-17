@@ -819,11 +819,22 @@ button[aria-pressed="true"] {
   font-weight: 700;
 }
 
-.reset {
+.action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.reset,
+.ground-demo,
+.ground-place {
   width: 100%;
+  font-size: 1.05rem;
+}
+
+.reset {
   background: #17202b;
   color: #fffdf8;
-  font-size: 1.15rem;
 }
 
 .reset:hover {
@@ -836,6 +847,26 @@ button[aria-pressed="true"] {
 
 .reset.is-needed:hover {
   background: #7c2a0e;
+}
+
+.ground-demo {
+  background: #0e7c66;
+  color: #fffdf8;
+  border-color: #17202b;
+}
+
+.ground-demo:hover {
+  background: #0b6553;
+}
+
+.ground-place {
+  background: #fffdf8;
+}
+
+@media (max-width: 640px) {
+  .action-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .chart-card {
