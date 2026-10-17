@@ -44,7 +44,8 @@
             <div class="blob-shadow" id="shadow" aria-hidden="true"></div>
             <div class="particles" id="particles" aria-hidden="true"></div>
             <div class="car" id="car">
-              <!-- Upside-down side view: wheels to ceiling, nose left, four rear diffuser fans at the RIGHT end. -->
+              <!-- Default art is ceiling-ready (wheels at top). On the ground we flip the body upright. -->
+              <div class="car-body" id="car-body">
               <svg class="car-svg" viewBox="0 0 310 150" aria-hidden="true">
                 <g id="wheel-rear">
                   <circle cx="78" cy="26" r="18" fill="#17202b"/>
@@ -68,59 +69,62 @@
                   </g>
                   <circle cx="208" cy="26" r="3" fill="#17202b"/>
                 </g>
-                <!-- Floor facing the ceiling when inverted: underbody suction path toward rear inlet -->
-                <path id="underbody" fill="#243044" stroke="#17202b" stroke-width="3" d="M52 42 H236 C246 42 250 48 248 56 H58 C50 56 46 50 52 42 Z"/>
-                <path id="suction-marks" fill="none" stroke="#0e7c66" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 5" opacity="0.85" d="M70 50 H150 M100 58 H190"/>
-                <path fill="#ef4d4d" stroke="#17202b" stroke-width="3" d="M54 56 H228 C250 56 262 68 258 86 L250 108 C244 122 228 128 204 128 H86 C62 128 48 118 46 100 L50 70 C52 60 54 56 54 56 Z"/>
-                <path d="M68 66 H220" stroke="#ffb1aa" stroke-width="4" stroke-linecap="round"/>
-                <path fill="#d7f1fb" stroke="#17202b" stroke-width="3" d="M92 78 H188 C204 78 210 88 206 100 H98 C84 100 80 88 92 78 Z"/>
-                <path d="M110 88 H170" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-                <!-- Nose / front left -->
-                <rect x="40" y="72" width="14" height="12" rx="3" fill="#ffe28a" stroke="#17202b" stroke-width="2"/>
-                <path fill="#d63c3c" stroke="#17202b" stroke-width="2" d="M40 70 L54 56 L54 70 Z"/>
-                <!-- Rear diffuser outlet: four ducted fans at the END of the car (patent-style). -->
+                <!-- Cabin hangs away from the wheel plane. Fans stay on the underbody/rear bumper plane
+                     so flipping upright keeps wheels on the ground and fans at the rear end. -->
+                <path fill="#ef4d4d" stroke="#17202b" stroke-width="3" d="M56 56 H220 C242 56 252 70 248 88 L240 118 C234 132 216 138 190 138 H90 C64 138 50 126 48 108 L52 72 C54 60 56 56 56 56 Z"/>
+                <path d="M70 68 H210" stroke="#ffb1aa" stroke-width="4" stroke-linecap="round"/>
+                <path fill="#d7f1fb" stroke="#17202b" stroke-width="3" d="M92 80 H178 C194 80 200 92 196 106 H98 C82 106 78 92 92 80 Z"/>
+                <path d="M110 92 H160" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+                <rect x="42" y="78" width="14" height="12" rx="3" fill="#ffe28a" stroke="#17202b" stroke-width="2"/>
+                <path fill="#d63c3c" stroke="#17202b" stroke-width="2" d="M42 76 L56 56 L56 76 Z"/>
+                <!-- Underbody + rear diffuser fans (output at the END, next to the floor plane) -->
+                <path id="underbody" fill="#243044" stroke="#17202b" stroke-width="3" d="M52 40 H226 C236 40 240 46 238 54 H56 C48 54 46 46 52 40 Z"/>
+                <path id="suction-marks" fill="none" stroke="#0e7c66" stroke-width="3" stroke-linecap="round" stroke-dasharray="6 5" opacity="0.85" d="M68 48 H148 M98 56 H188"/>
                 <g id="fan-unit">
-                  <rect x="228" y="54" width="52" height="74" rx="8" fill="#1d4e89" stroke="#17202b" stroke-width="3"/>
+                  <rect x="220" y="38" width="64" height="36" rx="8" fill="#1d4e89" stroke="#17202b" stroke-width="3"/>
+                  <line x1="236" y1="40" x2="236" y2="72" stroke="#0f2f55" stroke-width="2"/>
+                  <line x1="252" y1="40" x2="252" y2="72" stroke="#0f2f55" stroke-width="2"/>
+                  <line x1="268" y1="40" x2="268" y2="72" stroke="#0f2f55" stroke-width="2"/>
                   <g id="blades">
-                    <g class="fan-spin" transform="translate(242 68)">
-                      <circle r="8" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
-                      <circle r="2.2" fill="#f4e2a8"/>
+                    <g class="fan-spin" transform="translate(228 56)">
+                      <circle r="7" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
+                      <circle r="2" fill="#f4e2a8"/>
                     </g>
-                    <g class="fan-spin" transform="translate(266 68)">
-                      <circle r="8" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
-                      <circle r="2.2" fill="#f4e2a8"/>
+                    <g class="fan-spin" transform="translate(244 56)">
+                      <circle r="7" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
+                      <circle r="2" fill="#f4e2a8"/>
                     </g>
-                    <g class="fan-spin" transform="translate(242 100)">
-                      <circle r="8" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
-                      <circle r="2.2" fill="#f4e2a8"/>
+                    <g class="fan-spin" transform="translate(260 56)">
+                      <circle r="7" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
+                      <circle r="2" fill="#f4e2a8"/>
                     </g>
-                    <g class="fan-spin" transform="translate(266 100)">
-                      <circle r="8" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
-                      <ellipse cx="0" cy="-5" rx="2.4" ry="5.2" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
-                      <circle r="2.2" fill="#f4e2a8"/>
+                    <g class="fan-spin" transform="translate(276 56)">
+                      <circle r="7" fill="#163a66" stroke="#17202b" stroke-width="1.5"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(120)"/>
+                      <ellipse cx="0" cy="-4.2" rx="2.2" ry="4.6" fill="#f4e2a8" stroke="#17202b" stroke-width="1" transform="rotate(240)"/>
+                      <circle r="2" fill="#f4e2a8"/>
                     </g>
                   </g>
-                  <rect x="278" y="62" width="10" height="58" rx="2" fill="#0f2f55" stroke="#17202b" stroke-width="2"/>
                 </g>
                 <g id="air-marks" stroke="#1d4e89" stroke-width="4" stroke-linecap="round" opacity="0.85">
-                  <line x1="290" y1="74" x2="302" y2="70"/>
-                  <line x1="290" y1="90" x2="304" y2="90"/>
-                  <line x1="290" y1="106" x2="302" y2="110"/>
+                  <line x1="288" y1="48" x2="304" y2="44"/>
+                  <line x1="288" y1="56" x2="306" y2="56"/>
+                  <line x1="288" y1="64" x2="304" y2="68"/>
                 </g>
-                <circle id="fan-anchor" cx="300" cy="90" r="1" fill="none"/>
-                <circle id="inlet-anchor" cx="170" cy="50" r="1" fill="none"/>
+                <circle id="fan-anchor" cx="304" cy="56" r="1" fill="none"/>
+                <circle id="inlet-anchor" cx="170" cy="48" r="1" fill="none"/>
               </svg>
+              </div>
               <div class="arrows" aria-hidden="true">
                 <div class="arrow arrow-up" id="arrow-up">
                   <div class="arrow-graphic">

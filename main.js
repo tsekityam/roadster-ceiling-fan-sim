@@ -18,6 +18,7 @@
 
   var stage = document.getElementById("stage");
   var car = document.getElementById("car");
+  var carBody = document.getElementById("car-body");
   var svg = car.querySelector(".car-svg");
   var shadow = document.getElementById("shadow");
   var particleLayer = document.getElementById("particles");
@@ -428,20 +429,34 @@
     };
   }
 
+  // Art is drawn for the ceiling (wheels at the top). Near the ground we flip it
+  // upright so wheels sit on the floor, not above the roof.
+  function isUpright() {
+    if (sim.mode === "floor") return true;
+    if (sim.mode === "ceiling") return false;
+    return sim.y > 0.5;
+  }
+
   function renderCar() {
     var m = stageMetrics();
     var px = m.minX + sim.x * (m.maxX - m.minX);
     var py = m.topY + sim.y * (m.bottomY - m.topY);
+    var upright = isUpright();
     var tilt = 0;
     if (!reduceMotion && sim.mode === "air") tilt = Math.sin(sim.y * 10) * 2.5;
-    if (sim.mode === "floor") tilt = -3;
+    if (sim.mode === "floor") tilt = 2;
     car.style.transform = "translate(" + px + "px, " + py + "px) rotate(" + tilt + "deg)";
+    carBody.style.transform = upright ? "scaleY(-1)" : "scaleY(1)";
+    car.classList.toggle("is-upright", upright);
+    car.classList.toggle("is-inverted", !upright);
 
     fanSpins.forEach(function (fan) {
       fan.node.setAttribute("transform", fan.base + " rotate(" + sim.fanAngle + ")");
     });
-    wheelRear.setAttribute("transform", "rotate(" + sim.wheelAngle + " 78 26)");
-    wheelFront.setAttribute("transform", "rotate(" + sim.wheelAngle + " 208 26)");
+    // Wheel spin direction follows travel; invert when the body is flipped upright.
+    var wheelSpin = upright ? -sim.wheelAngle : sim.wheelAngle;
+    wheelRear.setAttribute("transform", "rotate(" + wheelSpin + " 78 26)");
+    wheelFront.setAttribute("transform", "rotate(" + wheelSpin + " 208 26)");
     var airOpacity = sim.fan <= 0 ? "0" : String(0.35 + (sim.fan / 100) * 0.65);
     airMarks.setAttribute("opacity", airOpacity);
     if (suctionMarks) suctionMarks.setAttribute("opacity", airOpacity);

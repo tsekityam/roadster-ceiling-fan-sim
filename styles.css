@@ -309,6 +309,11 @@ h3 {
   will-change: transform;
 }
 
+.car-body {
+  transform-origin: center center;
+  will-change: transform;
+}
+
 .car-svg {
   width: min(250px, 72vw);
   height: auto;
@@ -318,7 +323,8 @@ h3 {
 .arrows {
   position: absolute;
   left: calc(100% + 4px);
-  top: 52px;
+  top: 40%;
+  transform: translateY(-50%);
   width: max-content;
   display: flex;
   flex-direction: column;
