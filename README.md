@@ -1,70 +1,46 @@
-# 風扇車下壓力模擬
+# Roadster Ceiling Suction Model
 
-面向**中學物理**學生的互動模擬: 以體積流量、壓力差與力平衡, 分析「車尾風扇抽車底空氣」能否產生足以倒掛天花板的下壓力.
+High-school physics demo of the October 2026 Tesla Roadster upside-down reveal at SpaceX McGregor. Multi-mode fans pull air from under the car; the resulting pressure drop produces downforce `F = delta_p * A`. Cold-gas thrusters are separate and are not what holds the car on the ceiling.
 
-網上版: [https://kytse.com/roadster-ceiling-fan-sim/](https://kytse.com/roadster-ceiling-fan-sim/)
+**Live:** [https://kytse.com/roadster-ceiling-fan-sim/](https://kytse.com/roadster-ceiling-fan-sim/)
 
-繁體中文介面. 無需安裝後端; 以瀏覽器開啟即可.
+**Repo:** [tsekityam/roadster-ceiling-fan-sim](https://github.com/tsekityam/roadster-ceiling-fan-sim)
 
-## 開啟方法
+## Run locally
 
-1. 雙擊 `index.html`, 或以瀏覽器開啟.
-2. 或在本目錄執行:
+Static site: no build step.
 
+```bash
+python3 -m http.server 8765
 ```
-python3 -m http.server 8741
-```
 
-然後前往 [http://127.0.0.1:8741](http://127.0.0.1:8741).
+Open [http://127.0.0.1:8765/](http://127.0.0.1:8765/).
 
-## 學習目標
+Or open `index.html` directly in a browser (KaTeX loads from jsDelivr CDN).
 
-- 應用力平衡: 倒掛時比較下壓力 F 與重量 mg.
-- 理解壓力產生的力: F = ΔP · A.
-- 把風扇輸出連到體積流量 Q, 再連到 ΔP 與 F.
-- 辨識模型假設與局限 (非量產車實測).
+## Model (defaults)
 
-## 模型方程
+| Symbol | Default | Source |
+|--------|---------|--------|
+| P | 80 kW (4 x 20 kW) | Car and Driver / Tesla |
+| m | 1680 kg (~3700 lb) | Car and Driver (approx.) |
+| A | 4.0 m^2 | assumption |
+| eta | 0.60 | assumption |
+| h | 6 mm | assumption (seal gap) |
+| L | 12.2 m | assumption (perimeter) |
+| Cd | 0.62 | assumption |
+| rho | 1.225 kg/m^3 | air |
 
-設風扇相對輸出 u ∈ [0, 1], 車底有效面積 A, 質量 m:
+Formulas:
 
-1. **體積流量**  
-   Q = Q_max · u
+- `eta * P = delta_p * Q`
+- `Q = Cd * A_gap * sqrt(2 * delta_p / rho)` with `A_gap = L * h`
+- `delta_p = (eta*P / (Cd*A_gap*sqrt(2/rho)))^(2/3)`
+- `F = delta_p * A`, `N = F - mg` when inverted
+- `P_crit` from `F = mg`
 
-2. **壓力差 (洩漏主導近似)**  
-   若洩漏 Q ≈ C_d A_leak √(2ΔP / ρ), 則  
-   ΔP = K · Q²
+Simplified: steady flow, uniform underbody pressure, no speed-dependent aero.
 
-3. **下壓力**  
-   F = ΔP · A
+## Deploy
 
-4. **可貼條件**  
-   F ≥ mg
-
-### 本頁預設參數
-
-| 符號 | 數值 | 說明 |
-|------|------|------|
-| m | 1500 kg | 示範車質量 |
-| g | 9.81 m/s² | 重力加速度 |
-| A | 2.5 m² | 車底有效面積 |
-| Q_max | 5.0 m³/s | 最大體積流量 |
-| 臨界 u | 60% | 使 F = mg |
-| 臨界 Q | 3.0 m³/s | 對應臨界點 |
-
-K 由臨界點标定: 當 Q = 3.0 m³/s 時令 F = mg, 得  
-K = (mg / A) / Q² ≈ 654 Pa·s²/m⁶.
-
-## 操作提示
-
-- 拉動風扇輸出, 即時讀取 Q、ΔP、F, 並與 mg 比較.
-- **示範: 地面升至天花板** 可重現由 F &lt; mg 過渡到 F ≥ mg.
-- **放置於地面** 後自行調至 ≥ 60% 亦可重現上升.
-
-## 重要聲明
-
-此為**思想實驗 / 課堂模型**. 布局參考公開風扇車專利 (車尾擴散器風扇, 由車底抽氣), **並非**聲稱任何量產 Tesla Roadster 或其他市售車輛已可倒掛行駛. 流量與力的數量級參考公開風扇車文獻中數 m³/s 與 kN 級力, 方便計算, 不是儀表板讀數.
-
-## For teachers
-
-Audience: senior secondary physics. SI units throughout (m³/s, Pa/kPa, N/kN), with kgf as a secondary reading. Core relations: Q ∝ u, ΔP ∝ Q², F = ΔP·A, stick iff F ≥ mg. Assumptions listed in the on-page model panel.
+GitHub Pages from `main` via `.github/workflows/pages.yml`.
