@@ -22,16 +22,33 @@ python3 -m http.server 8741
 ## 點玩
 
 - 拉動「風扇輸出」(0 到 100), 或者撳 -10 / +10, 又或者試 30, 60, 90.
-- 「貼天花力」會跟住風扇一齊變. 兩個數字用同一把尺, 因為推空氣幾大力, 推返架車就幾大力.
-- 重力固定係 60. 吸力同重力並排比較.
-- 貼天花力大過或者等於 60, 架車倒掛, 沿住天花行.
-- 細過 60, 架車跌. 落地之後撳「重置再試」.
-- 未落地之前拉大風扇, 淨力可以改為推向天花, 有機會升返上去.
+- 畫面會同步顯示:
+  - 抽出空氣流量 Q (m3/s 同公升/秒)
+  - 車底壓力差 ΔP (kPa)
+  - 下壓力 F (kN / kgf)
+  - 同車重 1500 kg 比較
+- 當下壓力大過或者等於車重, 架車可以倒掛.
+- 細過車重就會跌.
+
+### 重現「由地面升上天花」
+
+1. 撳綠色掣 **由地面升上天花**.
+2. 或者撳 **放喺地面自己試**, 再拉風扇到 **60% 或以上** (約 3.0 m3/s).
+3. 撳 **重置到天花** 可以即刻返去天花開始.
 
 ## 畀家長同老師
 
-呢個係簡化力學模型, 唔係任何一架生產車嘅實測. 公開風扇車專利同報道描述嘅布局大概係: 幾把電動涵道風扇裝喺車尾擴散器, 由車底入口抽走空氣, 再喺車尾出口向外吹出, 令車底壓力變低, 從而產生下壓力. 畫面跟呢個「輸出喺車尾, 唔係車頂」嘅布局. 重力設做固定 60. 風扇輸出由 0 到 100. 畫面上「貼天花力」等於「風扇輸出」, 方便比較大細. 當貼天花力細過重力, 車會向下跌. 當貼天花力大過或者等於重力, 車可以保持倒掛. 數字唔係真實車輛嘅牛頓或者公斤數. 「吸力」只係日常講法. 真正機制係風扇抽走同吹走空氣, 造成壓力差, 唔係魔法吸塵機. 請唔好理解成某一架出街跑車已經可以倒掛行車.
+課堂簡化模型, 唔係任何一架生產車嘅實測. 公開風扇車布局係車尾擴散器風扇由車底抽氣再向外吹.
+
+簡化公式:
+
+1. Q = Qmax x (風扇%/100), Qmax = 5.0 m3/s
+2. ΔP = K x Q^2 (漏氣型關係: 流量愈大, 要更大壓力差)
+3. F = ΔP x A, A = 2.5 m2
+4. 車重 mg, m = 1500 kg; 當 F >= mg 可倒掛
+
+流量數量級參考公開風扇車研究大約幾立方米每秒. 數字係示範值, 方便比較, 唔係儀表板實測.
 
 ## For parents and teachers
 
-This is a classroom thought experiment, not a claim about any production car. Public fan-car patents place ducted fans in the rear diffuser: they pull air from under the floor and exhaust it at the rear, lowering underbody pressure to create downforce. The demo uses that rear-outlet layout, not a roof-mounted fan. A fixed weight of 60 is compared with fan output on a shared 0-100 scale. The car stays upside down only when the holding force is at least its weight. The kid-facing word for that force is everyday "suction," and the page says it is not a magic vacuum cleaner.
+Classroom model, not production-car telemetry. Rear fans extract underbody air. The UI shows volume flow Q, pressure drop ΔP, and downforce F = ΔP x area versus a 1500 kg car. Q scales with the slider; ΔP scales with Q squared. Stick threshold is about 3.0 m3/s (60% fan). Order-of-magnitude values only.

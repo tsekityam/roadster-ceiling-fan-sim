@@ -1,12 +1,27 @@
-/* Upside-down fan car.
-   Shared scale: fan output 0-100 equals the upward force on the car.
-   Weight is fixed. The car stays on the ceiling only when hold >= weight.
-   Layout follows public fan-car patents: fans sit in the REAR diffuser,
-   pull air from under the floor, and exhaust out the back. Not a roof fan. */
+/* Upside-down fan car with real-ish units.
+   Fans in the rear diffuser pull air from under the floor (public fan-car layout).
+   Model (classroom simplification of sealed underbody suction):
+     Q  = Q_max * (fan%/100)          volume flow out of the underbody [m3/s]
+     dP = K * Q^2                     pressure drop under the floor [Pa]
+                                      (leakage-like: more flow needs more suction)
+     F  = dP * AREA                   downforce toward the road/ceiling [N]
+   Stick when F >= mass * g.
+   Numbers are tuned to classroom scale, inspired by published fan-car ranges
+   (roughly a few m3/s of air and kN of force), not a claim about any production car. */
 (function () {
   "use strict";
 
-  var WEIGHT = 60;
+  var G = 9.81;
+  var CAR_MASS_KG = 1500;
+  var WEIGHT_N = CAR_MASS_KG * G;
+  var AREA_M2 = 2.5;
+  var Q_MAX = 5.0;
+  var FAN_STICK = 60;
+  var Q_STICK = Q_MAX * (FAN_STICK / 100);
+  var DP_STICK = WEIGHT_N / AREA_M2;
+  var K_PRESS = DP_STICK / (Q_STICK * Q_STICK);
+  var F_MAX_N = K_PRESS * Q_MAX * Q_MAX * AREA_M2;
+
   var FALL_MASS = 36;
   var DRIVE_SPEED = 0.16;
   var ARROW_MAX = 54;
@@ -14,7 +29,7 @@
   var WHEEL_BOTTOM = 40;
   var THUMB = 44;
 
-  var C = { w: 360, h: 230, l: 48, r: 58, t: 16, b: 36 };
+  var C = { w: 360, h: 230, l: 52, r: 62, t: 16, b: 40 };
 
   var stage = document.getElementById("stage");
   var car = document.getElementById("car");
@@ -75,16 +90,44 @@
     return Math.max(a, Math.min(b, n));
   }
 
+  function physicsFromFan(fanPct) {
+    var u = clamp(fanPct, 0, 100) / 100;
+    var Q = Q_MAX * u;
+    var dP = K_PRESS * Q * Q;
+    var F = dP * AREA_M2;
+    return {
+      fan: fanPct,
+      Q: Q,
+      Q_Ls: Q * 1000,
+      dP: dP,
+      dP_kPa: dP / 1000,
+      F: F,
+      F_kN: F / 1000,
+      F_kgf: F / G,
+      weightN: WEIGHT_N,
+      weightKg: CAR_MASS_KG,
+      stuck: F + 1e-6 >= WEIGHT_N,
+      fill: F_MAX_N > 0 ? (100 * F) / F_MAX_N : 0,
+      weightFill: F_MAX_N > 0 ? (100 * WEIGHT_N) / F_MAX_N : 0
+    };
+  }
+
   function holdForce(fan) {
-    return fan;
+    return physicsFromFan(fan).F;
   }
 
-  function X(v) {
-    return C.l + (v / 100) * (C.w - C.l - C.r);
+  function fmt(n, digits) {
+    var d = digits == null ? 1 : digits;
+    return Number(n).toFixed(d);
   }
 
-  function Y(v) {
-    return C.t + (1 - v / 100) * (C.h - C.t - C.b);
+  function X(fanPct) {
+    return C.l + (fanPct / 100) * (C.w - C.l - C.r);
+  }
+
+  function Yforce(forceN) {
+    var top = F_MAX_N;
+    return C.t + (1 - forceN / top) * (C.h - C.t - C.b);
   }
 
   function svgEl(name, attrs) {
@@ -96,56 +139,65 @@
   }
 
   function buildChart() {
+    while (chart.firstChild) chart.removeChild(chart.firstChild);
+
     var stick = svgEl("rect", {
       x: X(0),
-      y: Y(100),
+      y: Yforce(F_MAX_N),
       width: X(100) - X(0),
-      height: Y(WEIGHT) - Y(100),
+      height: Yforce(WEIGHT_N) - Yforce(F_MAX_N),
       fill: "#d9f3ea"
     });
     var fall = svgEl("rect", {
       x: X(0),
-      y: Y(WEIGHT),
+      y: Yforce(WEIGHT_N),
       width: X(100) - X(0),
-      height: Y(0) - Y(WEIGHT),
+      height: Yforce(0) - Yforce(WEIGHT_N),
       fill: "#f8d2cc"
     });
     var axisX = svgEl("line", {
       x1: X(0),
-      y1: Y(0),
+      y1: Yforce(0),
       x2: X(100),
-      y2: Y(0),
+      y2: Yforce(0),
       stroke: "#17202b",
       "stroke-width": 2
     });
     var axisY = svgEl("line", {
       x1: X(0),
-      y1: Y(0),
+      y1: Yforce(0),
       x2: X(0),
-      y2: Y(100),
+      y2: Yforce(F_MAX_N),
       stroke: "#17202b",
       "stroke-width": 2
     });
     var gravity = svgEl("line", {
       x1: X(0),
-      y1: Y(WEIGHT),
+      y1: Yforce(WEIGHT_N),
       x2: X(100),
-      y2: Y(WEIGHT),
+      y2: Yforce(WEIGHT_N),
       stroke: "#c2410c",
       "stroke-width": 3,
       "stroke-dasharray": "7 5"
     });
-    var relation = svgEl("line", {
-      x1: X(0),
-      y1: Y(0),
-      x2: X(100),
-      y2: Y(100),
+
+    var relation = svgEl("path", {
+      fill: "none",
       stroke: "#0e7c66",
       "stroke-width": 3
     });
+    var pts = [];
+    var i;
+    for (i = 0; i <= 20; i += 1) {
+      var fan = (i / 20) * 100;
+      var phy = physicsFromFan(fan);
+      pts.push((i === 0 ? "M" : "L") + X(fan) + " " + Yforce(phy.F));
+    }
+    relation.setAttribute("d", pts.join(" "));
+
     var cross = svgEl("circle", {
-      cx: X(WEIGHT),
-      cy: Y(WEIGHT),
+      cx: X(FAN_STICK),
+      cy: Yforce(WEIGHT_N),
       r: 5,
       fill: "#fffdf8",
       stroke: "#c2410c",
@@ -153,9 +205,9 @@
     });
     cursor = svgEl("line", {
       x1: X(75),
-      y1: Y(75),
+      y1: Yforce(physicsFromFan(75).F),
       x2: X(75),
-      y2: Y(0),
+      y2: Yforce(0),
       stroke: "#1d4e89",
       "stroke-width": 2,
       "stroke-dasharray": "3 4"
@@ -168,21 +220,24 @@
     });
     dot = svgEl("circle", { r: 7, fill: "#0e7c66" });
 
-    [0, WEIGHT, 100].forEach(function (tick) {
-      var tx = svgEl("text", { x: X(tick), y: Y(0) + 20, "text-anchor": "middle", class: "tick" });
-      tx.textContent = String(tick);
+    [0, FAN_STICK, 100].forEach(function (tick) {
+      var phy = physicsFromFan(tick);
+      var tx = svgEl("text", { x: X(tick), y: Yforce(0) + 18, "text-anchor": "middle", class: "tick" });
+      tx.textContent = fmt(phy.Q, 1);
       chart.appendChild(tx);
-      var ty = svgEl("text", { x: X(0) - 8, y: Y(tick) + 4, "text-anchor": "end", class: "tick" });
-      ty.textContent = String(tick);
+    });
+    [0, WEIGHT_N, F_MAX_N].forEach(function (forceN) {
+      var ty = svgEl("text", { x: X(0) - 6, y: Yforce(forceN) + 4, "text-anchor": "end", class: "tick" });
+      ty.textContent = fmt(forceN / 1000, forceN === 0 ? 0 : 1);
       chart.appendChild(ty);
     });
 
-    var xName = svgEl("text", { x: (X(0) + X(100)) / 2, y: C.h - 4, "text-anchor": "middle", class: "axis-name" });
-    xName.textContent = "風扇輸出";
-    var yName = svgEl("text", { x: 16, y: 14, class: "axis-name" });
-    yName.textContent = "力";
-    var gName = svgEl("text", { x: X(100) + 8, y: Y(WEIGHT) + 5, class: "axis-name" });
-    gName.textContent = "重力";
+    var xName = svgEl("text", { x: (X(0) + X(100)) / 2, y: C.h - 2, "text-anchor": "middle", class: "axis-name" });
+    xName.textContent = "抽出空氣 Q (m3/s)";
+    var yName = svgEl("text", { x: 14, y: 14, class: "axis-name" });
+    yName.textContent = "下壓力 (kN)";
+    var gName = svgEl("text", { x: X(100) + 6, y: Yforce(WEIGHT_N) + 5, class: "axis-name" });
+    gName.textContent = "車重";
 
     [stick, fall, axisX, axisY, gravity, relation, cross, cursor, dotHalo, dot, xName, yName, gName].forEach(function (node) {
       chart.appendChild(node);
@@ -215,7 +270,11 @@
 
   function paintFanChrome() {
     var fan = sim.fan;
-    slider.setAttribute("aria-valuetext", fan + "%, 貼天花力 " + fan + ", 重力 " + WEIGHT);
+    var phy = physicsFromFan(fan);
+    slider.setAttribute(
+      "aria-valuetext",
+      fan + "%, 抽出空氣 " + fmt(phy.Q, 2) + " 立方米每秒, 下壓力 " + fmt(phy.F_kgf, 0) + " 公斤力, 車重 " + CAR_MASS_KG + " 公斤"
+    );
     sliderFill.style.width = "calc((100% - " + THUMB + "px) * " + (fan / 100) + " + " + (THUMB / 2) + "px)";
     document.querySelectorAll("[data-fan]").forEach(function (btn) {
       btn.setAttribute("aria-pressed", String(Number(btn.dataset.fan) === fan));
@@ -259,72 +318,82 @@
   }
 
   function copyForState() {
-    var fan = sim.fan;
-    var nums = "風扇輸出 " + fan + ", 貼天花力 " + fan + ", 重力 " + WEIGHT + ". ";
+    var phy = physicsFromFan(sim.fan);
+    var nums =
+      "抽出空氣 " +
+      fmt(phy.Q, 2) +
+      " m3/s (" +
+      fmt(phy.Q_Ls, 0) +
+      " L/s), 下壓力 " +
+      fmt(phy.F_kgf, 0) +
+      " kgf, 車重 " +
+      CAR_MASS_KG +
+      " kg. ";
     if (sim.mode === "floor") {
-      if (fan >= WEIGHT) {
+      if (phy.stuck) {
         return {
           tone: "ok",
           title: "準備升起",
           pill: "起飛",
-          body: nums + "吸力夠大, 架車正由地面升上天花!"
+          body: nums + "下壓力大過車重, 架車正由地面升上天花!"
         };
       }
       return {
         tone: "bad",
         title: "喺地面",
         pill: "喺地面",
-        body: nums + "風扇太細力, 吸力細過重力. 拉高到 60 或以上, 就會由地面升上天花!"
+        body: nums + "下壓力細過車重. 拉風扇到 " + FAN_STICK + "% 或以上 (約 " + fmt(Q_STICK, 1) + " m3/s), 就會升起!"
       };
     }
-    if (sim.mode === "ceiling" && fan >= WEIGHT) {
-      if (fan === WEIGHT) {
+    if (sim.mode === "ceiling" && phy.stuck) {
+      if (Math.abs(phy.F - WEIGHT_N) < WEIGHT_N * 0.02) {
         return {
           tone: "ok",
           title: "啱啱夠",
           pill: "貼住",
-          body: nums + "吸力同重力一樣大, 可以倒掛!"
+          body: nums + "下壓力同車重差不多, 可以倒掛!"
         };
       }
       return {
         tone: "ok",
         title: "可以倒掛",
         pill: "貼住行緊",
-        body: nums + "吸力夠大, 頂住重力, 可以倒掛!"
+        body: nums + "下壓力夠大, 頂住車重, 可以倒掛!"
       };
     }
-    if (fan >= WEIGHT && sim.vy < -0.05) {
+    if (phy.stuck && sim.vy < -0.05) {
       return {
         tone: "ok",
         title: "推返上天花",
         pill: "升緊",
-        body: nums + "吸力夠大, 淨力推向天花."
+        body: nums + "下壓力夠大, 淨力推向天花."
       };
     }
-    if (fan >= WEIGHT) {
+    if (phy.stuck) {
       return {
         tone: "warn",
         title: "減速中",
         pill: "減速",
-        body: nums + "吸力已經大過重力, 架車減速緊."
+        body: nums + "下壓力已經大過車重, 架車減速緊."
       };
     }
-    var gap = WEIGHT - fan;
-    var title = gap >= 25 ? "跌得快" : gap >= 8 ? "跌緊" : "慢慢跌";
+    var gapKg = CAR_MASS_KG - phy.F_kgf;
+    var title = gapKg >= 600 ? "跌得快" : gapKg >= 200 ? "跌緊" : "慢慢跌";
     return {
       tone: "bad",
       title: title,
       pill: title,
-      body: nums + "風扇太細力, 吸力細過重力, 跌緊!"
+      body: nums + "下壓力細過車重, 跌緊!"
     };
   }
 
   function stepPhysics(dt) {
-    var hold = holdForce(sim.fan);
-    var netDown = WEIGHT - hold;
+    var phy = physicsFromFan(sim.fan);
+    var hold = phy.F;
+    var netDown = (WEIGHT_N - hold) / 1000;
 
     if (sim.mode === "ceiling") {
-      if (hold >= WEIGHT) {
+      if (phy.stuck) {
         sim.y = 0;
         sim.vy = 0;
         sim.x += sim.dir * DRIVE_SPEED * dt;
@@ -361,7 +430,7 @@
       if (sim.y <= 0) {
         sim.y = 0;
         sim.vy = 0;
-        if (hold >= WEIGHT) sim.mode = "ceiling";
+        if (phy.stuck) sim.mode = "ceiling";
       } else if (sim.y >= 1) {
         sim.y = 1;
         if (!reduceMotion && sim.vy > 0.45) {
@@ -377,7 +446,7 @@
 
     if (sim.mode === "floor") {
       sim.y = 1;
-      if (hold >= WEIGHT) {
+      if (phy.stuck) {
         // Strong enough rear-fan downforce: leave the ground and climb to the ceiling.
         sim.mode = "air";
         sim.vy = -0.55;
@@ -461,14 +530,14 @@
     airMarks.setAttribute("opacity", airOpacity);
     if (suctionMarks) suctionMarks.setAttribute("opacity", airOpacity);
 
-    var hold = holdForce(sim.fan);
-    var upH = (hold / 100) * ARROW_MAX;
-    var downH = (WEIGHT / 100) * ARROW_MAX;
-    document.getElementById("shaft-up").style.height = (hold > 0 ? Math.max(upH, 8) : 0) + "px";
+    var phyArrow = physicsFromFan(sim.fan);
+    var upH = (phyArrow.fill / 100) * ARROW_MAX;
+    var downH = (phyArrow.weightFill / 100) * ARROW_MAX;
+    document.getElementById("shaft-up").style.height = (phyArrow.F > 0 ? Math.max(upH, 8) : 0) + "px";
     document.getElementById("shaft-down").style.height = downH + "px";
-    document.querySelector("#arrow-up .head").style.visibility = hold > 0 ? "visible" : "hidden";
-    document.getElementById("arrow-up").classList.toggle("is-low", hold < WEIGHT);
-    document.getElementById("arrow-hold").textContent = String(hold);
+    document.querySelector("#arrow-up .head").style.visibility = phyArrow.F > 0 ? "visible" : "hidden";
+    document.getElementById("arrow-up").classList.toggle("is-low", !phyArrow.stuck);
+    document.getElementById("arrow-hold").textContent = fmt(phyArrow.F_kgf, 0);
 
     var shadowY = m.stageH - m.floorH - 8;
     shadow.style.transform = "translate(" + (px + m.svgW * 0.5) + "px, " + shadowY + "px) scale(" + (0.55 + sim.y * 0.7) + ", 1)";
@@ -580,40 +649,78 @@
 
   function renderReadouts() {
     var fan = sim.fan;
-    var hold = holdForce(fan);
+    var phy = physicsFromFan(fan);
     var copy = copyForState();
-    var cmp = hold > WEIGHT ? "大過" : hold < WEIGHT ? "細過" : "等於";
-    var net = hold - WEIGHT;
-    var netText = net > 0 ? "淨力: 吸力贏 " + net : net < 0 ? "淨力: 重力贏 " + (-net) : "淨力: 打和";
-    var verdict = "吸力 " + hold + " " + cmp + " 重力 " + WEIGHT;
-    var chartText;
-    if (hold > WEIGHT) chartText = "而家個點: 風扇輸出 " + fan + ", 貼天花力 " + hold + ". 個點高過重力線, 所以貼得住.";
-    else if (hold < WEIGHT) chartText = "而家個點: 風扇輸出 " + fan + ", 貼天花力 " + hold + ". 個點低過重力線, 所以會跌.";
-    else chartText = "而家個點: 風扇輸出 " + fan + ", 貼天花力 " + hold + ". 個點啱啱喺重力線上.";
+    var cmp = phy.F > WEIGHT_N ? "大過" : phy.F < WEIGHT_N ? "細過" : "等於";
+    var netKg = phy.F_kgf - CAR_MASS_KG;
+    var netText =
+      netKg > 0
+        ? "淨力: 下壓力贏約 " + fmt(netKg, 0) + " kgf"
+        : netKg < 0
+          ? "淨力: 車重贏約 " + fmt(-netKg, 0) + " kgf"
+          : "淨力: 打和";
+    var verdict =
+      "下壓力 " +
+      fmt(phy.F_kgf, 0) +
+      " kgf (" +
+      fmt(phy.F_kN, 1) +
+      " kN) " +
+      cmp +
+      " 車重 " +
+      CAR_MASS_KG +
+      " kg";
+    var chartText =
+      "而家: 抽出 " +
+      fmt(phy.Q, 2) +
+      " m3/s, 壓力差 " +
+      fmt(phy.dP_kPa, 2) +
+      " kPa, 下壓力 " +
+      fmt(phy.F_kN, 1) +
+      " kN. " +
+      (phy.stuck ? "高過車重線, 貼得住." : "低過車重線, 會跌.");
 
     var key = [fan, sim.mode, copy.title, Math.sign(sim.vy)].join("|");
     if (key === lastReadout) {
-      moveChartDot(fan, hold);
+      moveChartDot(phy);
       return;
     }
     lastReadout = key;
 
     document.getElementById("big-fan").textContent = String(fan);
-    document.getElementById("fan-num").textContent = fan + "%";
-    document.getElementById("hold-num").textContent = String(hold);
-    document.getElementById("vs-hold-num").textContent = String(hold);
+    document.getElementById("q-num").textContent = fmt(phy.Q, 2);
+    document.getElementById("q-liters").textContent = fmt(phy.Q_Ls, 0);
+    document.getElementById("dp-num").textContent = fmt(phy.dP_kPa, 2);
+    document.getElementById("hold-num").textContent = fmt(phy.F_kgf, 0);
+    document.getElementById("hold-kn").textContent = fmt(phy.F_kN, 1);
+    document.getElementById("vs-hold-num").textContent = fmt(phy.F_kgf, 0);
     document.getElementById("fan-fill").style.width = fan + "%";
+    document.getElementById("q-fill").style.width = fan + "%";
     var holdFill = document.getElementById("hold-fill");
-    holdFill.style.width = hold + "%";
-    holdFill.classList.toggle("is-low", hold < WEIGHT);
+    holdFill.style.width = phy.fill + "%";
+    holdFill.classList.toggle("is-low", !phy.stuck);
+    var dpFill = document.getElementById("dp-fill");
+    if (dpFill) {
+      dpFill.style.width = phy.fill + "%";
+      dpFill.classList.toggle("is-low", !phy.stuck);
+    }
     var vsHold = document.getElementById("vs-hold");
-    vsHold.style.height = hold + "%";
-    vsHold.classList.toggle("is-low", hold < WEIGHT);
+    vsHold.style.height = phy.fill + "%";
+    vsHold.classList.toggle("is-low", !phy.stuck);
     document.getElementById("vs-mid").textContent = cmp;
-    document.getElementById("vs-mid").className = "vs-mid " + (hold >= WEIGHT ? "is-ok" : "is-bad");
+    document.getElementById("vs-mid").className = "vs-mid " + (phy.stuck ? "is-ok" : "is-bad");
     document.getElementById("verdict").textContent = verdict;
     document.getElementById("net").textContent = netText;
     document.getElementById("chart-now").textContent = chartText;
+    document.getElementById("formula-live").textContent =
+      "F = " +
+      fmt(phy.dP_kPa, 2) +
+      " kPa x " +
+      fmt(AREA_M2, 1) +
+      " m2 = " +
+      fmt(phy.F_kN, 1) +
+      " kN (約 " +
+      fmt(phy.F_kgf, 0) +
+      " kgf)";
 
     var status = document.getElementById("status");
     status.className = "status is-" + copy.tone;
@@ -623,9 +730,9 @@
     var pill = document.getElementById("stage-pill");
     pill.textContent = copy.pill;
     pill.className = "tag is-" + copy.tone;
-    resetBtn.classList.toggle("is-needed", sim.mode === "floor" && sim.fan < WEIGHT);
+    resetBtn.classList.toggle("is-needed", sim.mode === "floor" && !phy.stuck);
 
-    moveChartDot(fan, hold);
+    moveChartDot(phy);
 
     var immediate = copy.title !== queueTitle;
     queueTitle = copy.title;
@@ -634,19 +741,19 @@
 
   var queueTitle = "";
 
-  function moveChartDot(fan, hold) {
+  function moveChartDot(phy) {
     if (!dot) return;
-    var x = X(fan);
-    var y = Y(hold);
+    var x = X(phy.fan);
+    var y = Yforce(phy.F);
     dot.setAttribute("cx", x);
     dot.setAttribute("cy", y);
-    dot.setAttribute("fill", hold >= WEIGHT ? "#0e7c66" : "#b42318");
+    dot.setAttribute("fill", phy.stuck ? "#0e7c66" : "#b42318");
     dotHalo.setAttribute("cx", x);
     dotHalo.setAttribute("cy", y);
     cursor.setAttribute("x1", x);
     cursor.setAttribute("x2", x);
     cursor.setAttribute("y1", y);
-    cursor.setAttribute("y2", Y(0));
+    cursor.setAttribute("y2", Yforce(0));
   }
 
   var livePrimed = false;
@@ -680,13 +787,27 @@
   }
 
   function initWeights() {
-    document.querySelectorAll("[data-weight]").forEach(function (el) {
-      el.textContent = String(WEIGHT);
+    var weightFill = physicsFromFan(100).weightFill;
+    document.querySelectorAll("[data-weight-kg]").forEach(function (el) {
+      el.textContent = String(CAR_MASS_KG);
     });
-    document.getElementById("vs-weight").style.height = WEIGHT + "%";
+    document.querySelectorAll("[data-weight-kn]").forEach(function (el) {
+      el.textContent = fmt(WEIGHT_N / 1000, 1);
+    });
+    document.querySelectorAll("[data-area]").forEach(function (el) {
+      el.textContent = fmt(AREA_M2, 1);
+    });
+    document.querySelectorAll("[data-q-max]").forEach(function (el) {
+      el.textContent = fmt(Q_MAX, 1);
+    });
+    document.querySelectorAll("[data-q-stick]").forEach(function (el) {
+      el.textContent = fmt(Q_STICK, 1);
+    });
+    document.getElementById("vs-weight-num").textContent = String(CAR_MASS_KG);
+    document.getElementById("vs-weight").style.height = weightFill + "%";
     document.querySelectorAll(".vs-line, #gmark").forEach(function (el) {
-      if (el.id === "gmark") el.style.left = WEIGHT + "%";
-      else el.style.bottom = WEIGHT + "%";
+      if (el.id === "gmark") el.style.left = weightFill + "%";
+      else el.style.bottom = weightFill + "%";
     });
   }
 

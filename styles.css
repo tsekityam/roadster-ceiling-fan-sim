@@ -718,8 +718,36 @@ button[aria-pressed="true"] {
   background: #1d4e89;
 }
 
+.fill-dp {
+  background: #2f6fed;
+}
+
 .fill-hold {
   background: #0e7c66;
+}
+
+.phys-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formula {
+  margin-top: 4px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  background: #e7f1fb;
+  border: 2px solid #1d4e89;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.hidden-track {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
 }
 
 .fill-hold.is-low {
