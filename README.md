@@ -4,7 +4,7 @@
 
 畫面用繁體中文 (香港用語). 打開瀏覽器就玩到, 唔使安裝, 亦冇後端.
 
-網上版: [https://tsekityam.github.io/roadster-ceiling-fan-sim/](https://tsekityam.github.io/roadster-ceiling-fan-sim/)
+網上版: [https://kytse.com/roadster-ceiling-fan-sim/](https://kytse.com/roadster-ceiling-fan-sim/)
 
 ## 點打開
 
