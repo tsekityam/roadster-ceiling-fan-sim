@@ -8,7 +8,7 @@
   var WEIGHT = 60;
   var FALL_MASS = 36;
   var DRIVE_SPEED = 0.16;
-  var ARROW_MAX = 78;
+  var ARROW_MAX = 54;
   var SVG_H = 196;
   var WHEEL_BOTTOM = 54;
   var THUMB = 44;
@@ -353,14 +353,13 @@
     var stageH = stage.clientHeight;
     var ceilingH = stage.querySelector(".ceiling").offsetHeight;
     var floorH = stage.querySelector(".floor").offsetHeight;
-    var svgRect = svg.getBoundingClientRect();
-    var svgH = svgRect.height || 150;
-    var svgW = svgRect.width || 180;
+    var svgH = svg.clientHeight || 150;
+    var svgW = svg.clientWidth || 180;
     var wheelOffset = (WHEEL_BOTTOM / SVG_H) * svgH;
     var topY = ceilingH - wheelOffset - 4;
-    var bottomY = stageH - floorH - svgH + 10;
+    var bottomY = stageH - floorH - svgH + 6;
     if (bottomY < topY) bottomY = topY;
-    var arrowW = 86;
+    var arrowW = 128;
     var minX = 8;
     var maxX = Math.max(minX, stage.clientWidth - svgW - arrowW);
     return {
@@ -392,8 +391,9 @@
     var hold = holdForce(sim.fan);
     var upH = (hold / 100) * ARROW_MAX;
     var downH = (WEIGHT / 100) * ARROW_MAX;
-    document.getElementById("shaft-up").style.height = Math.max(upH, hold > 0 ? 6 : 0) + "px";
+    document.getElementById("shaft-up").style.height = (hold > 0 ? Math.max(upH, 8) : 0) + "px";
     document.getElementById("shaft-down").style.height = downH + "px";
+    document.querySelector("#arrow-up .head").style.visibility = hold > 0 ? "visible" : "hidden";
     document.getElementById("arrow-up").classList.toggle("is-low", hold < WEIGHT);
     document.getElementById("arrow-hold").textContent = String(hold);
 
