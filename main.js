@@ -1,7 +1,8 @@
 /* Upside-down fan car.
    Shared scale: fan output 0-100 equals the upward force on the car.
    Weight is fixed. The car stays on the ceiling only when hold >= weight.
-   The fan pushes air away from the ceiling. It does not vacuum the car up. */
+   Layout follows public fan-car patents: fans sit in the REAR diffuser,
+   pull air from under the floor, and exhaust out the back. Not a roof fan. */
 (function () {
   "use strict";
 
@@ -9,8 +10,8 @@
   var FALL_MASS = 36;
   var DRIVE_SPEED = 0.16;
   var ARROW_MAX = 54;
-  var SVG_H = 196;
-  var WHEEL_BOTTOM = 54;
+  var SVG_H = 150;
+  var WHEEL_BOTTOM = 40;
   var THUMB = 44;
 
   var C = { w: 360, h: 230, l: 48, r: 58, t: 16, b: 36 };
@@ -21,10 +22,16 @@
   var shadow = document.getElementById("shadow");
   var particleLayer = document.getElementById("particles");
   var fanAnchor = document.getElementById("fan-anchor");
-  var blades = document.getElementById("blades");
+  var fanSpins = Array.prototype.slice.call(document.querySelectorAll(".fan-spin")).map(function (node) {
+    return {
+      node: node,
+      base: node.getAttribute("transform") || ""
+    };
+  });
   var wheelRear = document.getElementById("wheel-rear");
   var wheelFront = document.getElementById("wheel-front");
   var airMarks = document.getElementById("air-marks");
+  var suctionMarks = document.getElementById("suction-marks");
   var slider = document.getElementById("fan-slider");
   var sliderFill = document.getElementById("slider-fill");
   var resetBtn = document.getElementById("reset");
@@ -359,7 +366,7 @@
     var topY = ceilingH - wheelOffset - 4;
     var bottomY = stageH - floorH - svgH + 6;
     if (bottomY < topY) bottomY = topY;
-    var arrowW = 128;
+    var arrowW = 120;
     var minX = 8;
     var maxX = Math.max(minX, stage.clientWidth - svgW - arrowW);
     return {
@@ -383,10 +390,14 @@
     if (sim.mode === "floor") tilt = -3;
     car.style.transform = "translate(" + px + "px, " + py + "px) rotate(" + tilt + "deg)";
 
-    blades.setAttribute("transform", "rotate(" + sim.fanAngle + " 122 152)");
-    wheelRear.setAttribute("transform", "rotate(" + sim.wheelAngle + " 62 34)");
-    wheelFront.setAttribute("transform", "rotate(" + sim.wheelAngle + " 186 34)");
-    airMarks.setAttribute("opacity", sim.fan <= 0 ? "0" : String(0.35 + (sim.fan / 100) * 0.65));
+    fanSpins.forEach(function (fan) {
+      fan.node.setAttribute("transform", fan.base + " rotate(" + sim.fanAngle + ")");
+    });
+    wheelRear.setAttribute("transform", "rotate(" + sim.wheelAngle + " 78 26)");
+    wheelFront.setAttribute("transform", "rotate(" + sim.wheelAngle + " 208 26)");
+    var airOpacity = sim.fan <= 0 ? "0" : String(0.35 + (sim.fan / 100) * 0.65);
+    airMarks.setAttribute("opacity", airOpacity);
+    if (suctionMarks) suctionMarks.setAttribute("opacity", airOpacity);
 
     var hold = holdForce(sim.fan);
     var upH = (hold / 100) * ARROW_MAX;
@@ -426,12 +437,14 @@
       sim.emitAcc += (sim.fan / 100) * 34 * dt;
       while (sim.emitAcc >= 1 && sim.particles.length < 30) {
         sim.emitAcc -= 1;
+        // Exhaust leaves the REAR outlet, mostly rearward.
         sim.particles.push({
-          x: origin.x + (Math.random() - 0.5) * 22,
-          y: origin.y,
-          vy: 70 + sim.fan * 1.6 + Math.random() * 50,
+          x: origin.x,
+          y: origin.y + (Math.random() - 0.5) * 28,
+          vx: 90 + sim.fan * 1.4 + Math.random() * 40,
+          vy: (Math.random() - 0.35) * 36,
           life: 0,
-          max: 0.42 + Math.random() * 0.28,
+          max: 0.38 + Math.random() * 0.28,
           wobble: Math.random() * Math.PI * 2
         });
       }
@@ -439,14 +452,15 @@
       sim.emitAcc = 0;
     }
 
+    var stageW = stage.clientWidth;
     var stageH = stage.clientHeight;
     var next = [];
     for (i = 0; i < sim.particles.length; i += 1) {
       var p = sim.particles[i];
       p.life += dt;
-      p.y += p.vy * dt;
-      p.x += Math.sin(p.life * 9 + p.wobble) * 12 * dt;
-      if (p.life < p.max && p.y < stageH - 28) next.push(p);
+      p.x += p.vx * dt;
+      p.y += p.vy * dt + Math.sin(p.life * 9 + p.wobble) * 8 * dt;
+      if (p.life < p.max && p.x < stageW - 8 && p.y < stageH - 20 && p.y > 8) next.push(p);
     }
     sim.particles = next;
 
@@ -459,7 +473,7 @@
       }
       var t = particle.life / particle.max;
       node.style.display = "block";
-      node.style.transform = "translate(" + particle.x + "px, " + particle.y + "px) scaleY(" + (0.7 + sim.fan / 200) + ")";
+      node.style.transform = "translate(" + particle.x + "px, " + particle.y + "px) scaleX(" + (1.1 + sim.fan / 180) + ")";
       node.style.opacity = String(1 - t);
     }
 

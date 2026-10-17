@@ -286,9 +286,9 @@ h3 {
 }
 
 .puff {
-  width: 10px;
-  height: 18px;
-  margin-left: -5px;
+  width: 18px;
+  height: 10px;
+  margin-left: -9px;
   background: #1d4e89;
   box-shadow: 0 0 0 2px rgba(255, 253, 248, 0.85);
 }
@@ -310,7 +310,7 @@ h3 {
 }
 
 .car-svg {
-  width: min(200px, 58vw);
+  width: min(250px, 72vw);
   height: auto;
   display: block;
 }
